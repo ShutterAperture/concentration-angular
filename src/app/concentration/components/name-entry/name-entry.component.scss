@@ -1,0 +1,84 @@
+@import "../../../../assets/styles/variables";
+@import "../../../../assets/styles/mixins";
+
+:host {
+  display: block;
+}
+
+#entryform {
+  width: 60%;
+  min-width: 600px;
+  border: 1px solid $section-border-color;
+  padding: 12px;
+  margin: 10% auto;
+  border-radius: .5em;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, .3);
+  background: #E8E8E8;
+  background: linear-gradient(to bottom, #E0E0E0, #E8E8E8, #DFDFDF);
+  overflow: auto;
+
+  h2 {
+    font-weight: 600;
+    font-size: 1em;
+    margin: 0;
+  }
+
+  p {
+    font-size: .9em;
+    margin: .25em 0 1em;
+  }
+}
+
+.entry-container {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+
+  div {
+    margin: .5em
+  }
+
+  label {
+    font-weight: 600;
+    padding-right: .375em;
+  }
+
+  #two-player {
+    flex: 1 1 calc(50% - 2em);
+    padding-right: 1em;
+    border-right: 1px dotted $input-border-color;
+  }
+
+  #one-player {
+    flex: 1 1 calc(50% - 2em);
+    padding-left: 1em;
+  }
+
+  input[type='text'] {
+    border: 1px solid $input-border-color;
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, .25);
+    padding: .25em .5em;
+    transition: all .5s;
+
+    &:focus {
+      border-color: #000;
+      box-shadow: none
+    }
+  }
+
+}
+
+button{
+  @include basic-button;
+  transition: all .25s;
+
+  &:hover:not([disabled]) {
+    box-shadow: none;
+  }
+
+  &[disabled] {
+    opacity: .5
+  }
+}
+
+

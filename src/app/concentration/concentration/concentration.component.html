@@ -1,0 +1,48 @@
+<main>
+  <ca-name-entry [@toggleVisibility]="initialized ? 'hidden' : 'visible'"
+                 (playerData)="acceptPlayerData($event)"></ca-name-entry>
+
+
+
+
+  <!-- Main game area -->
+  <div id="game-set" [@toggleVisibility]="initialized ? 'visible' : 'hidden'">
+    <div id="gamearea">
+      <div id="gameboard">
+        <div id="board"></div>
+      </div>
+
+      <p id="message">&nbsp;</p>
+
+      <form name="puzzleform" id="puzzleform" method="get" action="index.html">
+        <div>
+          <input type="text" name="solution" id="solution" size="55">
+          <input type="submit" value="OK">
+          <input type="submit" value="No" id="nobtn">
+        </div>
+      </form>
+
+      <form name="endform" id="endform" method="get" action="index.html">
+        <div>
+          <input type="submit" value="OK" id="pickPlayer0" data-playeridx="0">
+          <input type="submit" value="No" id="pickPlayer1" data-playeridx="1">
+        </div>
+      </form>
+
+      <p id="explanation">&nbsp;</p>
+
+    </div><!-- end, game board area -->
+
+
+
+    <div id="contestants">
+      <div id="scoreboard">
+
+      </div><!-- end, scoreboard -->
+      <div id="playagain-div" class="inner">
+        <a id="playagain" class="btn">Play Again</a>
+      </div>
+    </div><!-- end, contestants area -->
+    <a id="giveup" class="btn">End Game</a>
+  </div><!-- end, game set -->
+</main>

@@ -1,0 +1,34 @@
+<section id="entryform">
+  <p>This is a reproduction of <em>Concentration</em>, which  ran on NBC from the late 50's to 1973. The object of the game is to figure out what the puzzle means.
+     You expose puzzle pieces by matching prizes. Each match reveals a pair of pieces.</p>
+
+  <p> In this version, you can play single handed, or play with an opponent.</p>
+
+  <div class="entry-container">
+    <form id="two-player" [formGroup]="entryForm">
+      <h2>Play with 2 players</h2>
+      <div>
+        <label for="player1name">Player 1 Name</label>
+        <input type="text" formControlName="player1" id="player1name"  tabindex="1" placeholder="Player 1">
+      </div>
+      <div>
+        <label for="player2name">Player 2 Name</label>
+        <input type="text" formControlName="player2" id="player2name" tabindex="2" placeholder="Player 2">
+      </div>
+      <div>
+        <button type="button" (click)="setTwoHanded()"[disabled]="entryForm.invalid">Play Game</button>
+      </div>
+    </form>
+
+
+
+    <div id="one-player">
+      <h2>Play Single Handed</h2>
+      <button type="button" (click)="setSingle()">Play Game</button>
+    </div>
+
+  </div>
+
+
+
+</section>

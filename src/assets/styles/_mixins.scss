@@ -1,0 +1,9 @@
+@mixin basic-button {
+  border: 1px solid #EDD118;
+  border-radius: .9em;
+  color: #FFF;
+  background: #891E21;
+  padding: .2em 1em;
+  background: linear-gradient(to bottom, #B6292C, #891E21, #891D1D);
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, .5);
+}
