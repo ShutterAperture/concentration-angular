@@ -5,6 +5,10 @@ export interface Prize {
   duplicate: boolean;
 }
 
+export interface StyleObject {
+  [property: string]: any;
+}
+
 export interface PuzzlePrize {
   prizeName: string;
   rand: number;
@@ -14,8 +18,6 @@ export interface TrilonData  {
   visibleNumber: number;
   trilonState: TrilonState;
   prizeName: string;
-  url: string;
-  urlRetina?: string;
   row: number
   col: number
 }
@@ -25,6 +27,11 @@ export interface Puzzle {
   urlRetina?: string;
   solution: string;
   explanation: string;
+}
+
+export interface RandomizedPuzzle extends Puzzle {
+  rand: number;
+  compareString: string;
 }
 
 export interface PlayerData {

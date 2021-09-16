@@ -1,0 +1,14 @@
+<form [formGroup]="solutionForm" id="solutionForm" >
+  <div class="solution-container">
+    <div>
+      <label for="solution">Can you tell us what the puzzle says?</label>
+      <input type="text" formControlName="solution" id="solution" size="50">
+    </div>
+    <div class="solution-buttons">
+      <button (click)="checkSolution()" [disabled]="solutionForm.invalid">OK</button>
+      <button type="button" (click)="cancelSolve()">No</button>
+    </div>
+
+  </div>
+</form>
+

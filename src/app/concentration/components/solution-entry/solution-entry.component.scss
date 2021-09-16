@@ -1,0 +1,38 @@
+@import "variables";
+@import "mixins";
+
+button{
+  @include basic-button;
+  transition: all .25s;
+  display: inline-block;
+  margin-left: .4em;
+
+  &:hover:not([disabled]) {
+    box-shadow: none;
+  }
+
+  &[disabled] {
+    opacity: .5
+  }
+}
+
+#solutionForm{
+  width: 500px;
+  border:1px solid #e5e5e5;
+  padding:12px; margin:1em auto;
+  border-radius: .5em;
+  box-shadow: 4px 4px 10px rgba(0,0,0,.3);
+  background: #e8e8e8;
+  background: linear-gradient(to bottom, #e0e0e0, #e8e8e8, #dfdfdf);
+}
+
+.solution-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.solution-buttons {
+  flex: 1 0 auto;
+  white-space: nowrap;
+}

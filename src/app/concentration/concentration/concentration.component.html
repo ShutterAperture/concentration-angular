@@ -1,26 +1,25 @@
 <main>
-  <ca-name-entry [@toggleVisibility]="initialized ? 'hidden' : 'visible'"
+  <ca-name-entry @insertRemoveTrigger *ngIf="!initialized"
                  (playerData)="acceptPlayerData($event)"></ca-name-entry>
 
-
-
-
   <!-- Main game area -->
-  <div id="game-set" [@toggleVisibility]="initialized ? 'visible' : 'hidden'">
-    <div id="gamearea">
+  <div id="game-set" @insertRemoveTrigger *ngIf="initialized">
+    <div id="game-area">
       <div id="gameboard">
-        <div id="board"></div>
+        <div id="board">
+          <ca-trilon *ngFor="let trilon of trilonArray; index as i"
+                     [trilonData]="trilon"
+                     [puzzleUrl]="currentPuzzle.url"
+                     (click)="turnToPrize(trilon)"
+                     [puzzleUrlHiRes]="currentPuzzle.urlRetina"></ca-trilon>
+        </div>
       </div>
 
-      <p id="message">&nbsp;</p>
+      <p *ngIf="!!message" id="message">{{message}}</p>
 
-      <form name="puzzleform" id="puzzleform" method="get" action="index.html">
-        <div>
-          <input type="text" name="solution" id="solution" size="55">
-          <input type="submit" value="OK">
-          <input type="submit" value="No" id="nobtn">
-        </div>
-      </form>
+      <div @insertRemoveTrigger *ngIf="solutionFormVisible">
+        <ca-solution-entry (solutionProposed)="acceptSolution($event)"></ca-solution-entry>
+      </div>
 
       <form name="endform" id="endform" method="get" action="index.html">
         <div>
@@ -29,16 +28,12 @@
         </div>
       </form>
 
-      <p id="explanation">&nbsp;</p>
+      <p *ngIf="!!explanation" id="explanation">{{explanation}}</p>
 
     </div><!-- end, game board area -->
 
-
-
     <div id="contestants">
-      <div id="scoreboard">
-
-      </div><!-- end, scoreboard -->
+      <ca-scoreboard [players]="players" [singleMode]="singleMode"></ca-scoreboard>
       <div id="playagain-div" class="inner">
         <a id="playagain" class="btn">Play Again</a>
       </div>

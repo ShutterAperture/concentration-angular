@@ -1,1 +1,18 @@
-<p>trilon works!</p>
+<div class="trilon" [@setTrilonState]="trilonData.trilonState" [ngClass]="'row' + trilonData.row  + ' col' + trilonData.col">
+  <div class="face num">
+    <div class="inner">{{trilonData.visibleNumber}}</div>
+  </div>
+
+  <div class="face prize">
+    <ng-container [ngSwitch]="prizeType">
+      <div *ngSwitchCase="'wild'" class="inner wildcard">Wild Card</div>
+      <div *ngSwitchCase="'transfer'" class="inner">
+        <div class="transfer">{{trilonData.prizeName}}</div>
+        One Gift
+      </div>
+      <div *ngSwitchCase="'prize'"  class="inner">{{trilonData.prizeName}}</div>
+    </ng-container>
+  </div>
+
+  <div class="face pzl" [ngStyle]="puzzleStyleObject"></div>
+</div>

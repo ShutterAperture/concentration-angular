@@ -1,0 +1,41 @@
+@import "variables";
+@import "mixins";
+
+/* Overall container for board and score...the show's set */
+#game-set{
+  width: 80%; min-width: 990px;
+  margin: 0 auto;
+  overflow:auto;
+  min-height: 650px;
+}
+
+#game-area {
+  width:60%; min-width:530px;
+  float:left;
+}
+
+/* Area surrounding the actual board */
+#gameboard{
+  position:relative;
+  border:1px solid;
+  border-color:#efefef #c0c0c0 #c0c0c0 #efefef;
+  background: #f0f0f0;
+  background: linear-gradient(to bottom, #d8d8d8, #f0f0f0, #c8c8c8);
+  border-radius: .8em;
+  margin:80px auto 30px;
+  width:500px; height:390px;
+  box-shadow:3px 3px 15px rgba(0,0,0,.5);
+  padding:15px;
+}
+
+#board {
+
+  perspective:700px;
+  -webkit-perspective:700px;
+  position:relative;
+  left:0; top: 0;
+  margin:0;
+  background:#000;
+  border:1px solid #797979;
+  width: 500px; height: 390px;
+}
