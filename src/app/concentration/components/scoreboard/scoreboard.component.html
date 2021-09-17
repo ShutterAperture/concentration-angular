@@ -1,1 +1,11 @@
-<p>scoreboard works!</p>
+<section class="score-board" [ngClass]="{single: singleMode, double: !singleMode, transferrable: transferState !== null}">
+  <div class="container" *ngFor="let playerPrize of playerPrizes, index as i">
+    <h3 [class.current] = "i === activeIndex">{{playerPrize.player}}</h3>
+    <ul>
+      <li *ngFor="let prize of playerPrize.prizes" (click)="executeTransfer(prize, i)">
+        <span class="marker" [class.duplicate]="prize.duplicate"><span *ngIf="prize.duplicate">X</span></span>
+        <span class="prize">{{prize.prize}}</span>
+      </li>
+    </ul>
+  </div>
+</section>

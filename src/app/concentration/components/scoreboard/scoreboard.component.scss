@@ -1,0 +1,27 @@
+.score-board {
+  &.double {
+    width: 250px;
+    display: flex;
+
+    .container {
+      flex: 0 0 245px;
+      border: 1px solid rebeccapurple;
+    }
+  }
+
+  &.single {
+    width: 200px;
+
+    .container {
+      width: 100%;
+      border: 1px solid red;
+    }
+  }
+
+  h3 {
+    font-weight: bold;
+    &.current {
+      color: lime;
+    }
+  }
+}

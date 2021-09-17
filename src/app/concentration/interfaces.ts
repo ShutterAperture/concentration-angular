@@ -5,6 +5,11 @@ export interface Prize {
   duplicate: boolean;
 }
 
+export interface PlayerPrizes {
+  player: string;
+  prizes: Prize[]
+}
+
 export interface StyleObject {
   [property: string]: any;
 }

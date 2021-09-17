@@ -42,6 +42,6 @@ export const AVAILABLE_PUZZLES: Puzzle[] = [
 
 export const REBUS_PATH = '/assets/puzzles/'
 export const COMPARISON_INTERVAL = 2250;
-export const MESSAGE_DELAY = 1000;
+export const MESSAGE_DELAY = 3000;
 
 

@@ -5,7 +5,7 @@
       <input type="text" formControlName="solution" id="solution" size="50">
     </div>
     <div class="solution-buttons">
-      <button (click)="checkSolution()" [disabled]="solutionForm.invalid">OK</button>
+      <button type="button" (click)="checkSolution()" [disabled]="solutionForm.invalid">OK</button>
       <button type="button" (click)="cancelSolve()">No</button>
     </div>
 

@@ -30,7 +30,7 @@ export class ConcentrationComponent implements OnInit {
   singleMode!: boolean;
   players: string[] = []
   trilonArray: TrilonData[] = []
-  initialState: TrilonState = 'number'
+  initialState: TrilonState = 'prize'
   puzzleArray: RandomizedPuzzle[] = [];
   puzzleIndex = 0;
   currentPuzzle!: RandomizedPuzzle;
@@ -65,6 +65,13 @@ export class ConcentrationComponent implements OnInit {
     this.initialized = true;
     this.players = playerData.players;
     this.singleMode = playerData.singleMode
+    if(this.singleMode) {
+      this.players = ['Prizes'];
+      this.activeIndex = 0;
+    } else {
+      this.activeIndex = 1; // switchPlayers will set it back to 0
+      this.switchPlayers()
+    }
     this.initializePrizes();
     this.clickAllowed = true;
   }
@@ -149,7 +156,6 @@ export class ConcentrationComponent implements OnInit {
   }
 
   testPrizes() {
-    this.scoreboardComponent.setTransferState(null)
     const match = this.tilePair.some(tile => tile.prizeName === 'Wild') || this.tilePair[0].prizeName === this.tilePair[1].prizeName;
     this.clickAllowed = false;
     setTimeout(() => this.actOnMatch(match), COMPARISON_INTERVAL);
@@ -213,7 +219,6 @@ export class ConcentrationComponent implements OnInit {
 
   acceptSolution(solution: string|null) {
     this.hideSolutionForm()
-    alert(solution)
     if(solution !== null) {
       solution = solution.replace(/\W/gi,'')
       solution = solution.toLowerCase() //strip out non-alphabetical characters, and set to lower case, for less strict checking.
@@ -229,7 +234,7 @@ export class ConcentrationComponent implements OnInit {
       {
         this.setMessage('Sorry, that\'s incorrect. It\'s still your turn.');
       }
-      this.hideSolutionForm();
+
     }
   }
 
@@ -254,7 +259,7 @@ export class ConcentrationComponent implements OnInit {
 
   setMessage(message: string): void {
     this.message = message;
-    setTimeout(() => this.message = undefined, MESSAGE_DELAY)
+    //  setTimeout(() => this.message = undefined, MESSAGE_DELAY)
   };
 
 }

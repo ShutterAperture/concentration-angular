@@ -15,7 +15,7 @@
         </div>
       </div>
 
-      <p *ngIf="!!message" id="message">{{message}}</p>
+      <div class="message-container"><p @insertRemoveTrigger *ngIf="!!message" id="message">{{message}}</p></div>
 
       <div @insertRemoveTrigger *ngIf="solutionFormVisible">
         <ca-solution-entry (solutionProposed)="acceptSolution($event)"></ca-solution-entry>
@@ -28,12 +28,16 @@
         </div>
       </form>
 
-      <p *ngIf="!!explanation" id="explanation">{{explanation}}</p>
+      <p @insertRemoveTrigger *ngIf="!!explanation" id="explanation">{{explanation}}</p>
 
     </div><!-- end, game board area -->
 
     <div id="contestants">
-      <ca-scoreboard [players]="players" [singleMode]="singleMode"></ca-scoreboard>
+      <ca-scoreboard  [players]="players"
+                      [singleMode]="singleMode"
+                      [activeIndex]="activeIndex"
+                      [otherIndex]="otherIndex"
+                      (sentMessage)="setMessage($event)"></ca-scoreboard>
       <div id="playagain-div" class="inner">
         <a id="playagain" class="btn">Play Again</a>
       </div>
