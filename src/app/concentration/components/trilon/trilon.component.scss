@@ -9,6 +9,17 @@
   transform: translateZ(-28.9px);
   -webkit-transform: translateZ(-28.9px);
 
+
+  &.state-prize {
+    transform: translateZ(-28.9px) rotateY(-120deg);
+    -webkit-transform: translateZ(-28.9px) rotateY(-120deg);
+  }
+
+  &.state-puzzle {
+    transform: translateZ(-28.9px) rotateY(-240deg);
+    -webkit-transform: translateZ(-28.9px) rotateY(-240deg);
+  }
+
   &.row0 {
     top: 1px
   }

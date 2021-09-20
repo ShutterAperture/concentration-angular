@@ -6,7 +6,8 @@
     </div>
     <div class="solution-buttons">
       <button type="button" (click)="checkSolution()" [disabled]="solutionForm.invalid">OK</button>
-      <button type="button" (click)="cancelSolve()">No</button>
+      <button *ngIf="!showGiveUp" type="button" (click)="cancelSolve()">No</button>
+      <button *ngIf="showGiveUp" type="button" (click)="giveUp()">Give Up</button>
     </div>
 
   </div>

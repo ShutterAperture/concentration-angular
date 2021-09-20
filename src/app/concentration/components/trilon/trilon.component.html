@@ -1,4 +1,4 @@
-<div class="trilon" [@setTrilonState]="trilonData.trilonState" [ngClass]="'row' + trilonData.row  + ' col' + trilonData.col">
+<div class="trilon"  [ngClass]="'state-' + trilonData.trilonState + ' row' + trilonData.row  + ' col' + trilonData.col">
   <div class="face num">
     <div class="inner">{{trilonData.visibleNumber}}</div>
   </div>

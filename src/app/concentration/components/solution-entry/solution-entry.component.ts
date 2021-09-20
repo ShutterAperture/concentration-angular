@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -7,7 +7,9 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./solution-entry.component.scss']
 })
 export class SolutionEntryComponent implements OnInit {
+  @Input() showGiveUp = false;
   @Output() solutionProposed: EventEmitter<string|null> = new EventEmitter<string | null>()
+  @Output() giveUpGame: EventEmitter<void> = new EventEmitter<void>()
   solutionForm!: FormGroup;
   constructor() { }
 
@@ -24,6 +26,10 @@ export class SolutionEntryComponent implements OnInit {
 
   cancelSolve() {
     this.solutionProposed.emit(null)
+  }
+
+  giveUp() {
+    this.giveUpGame.emit()
   }
 
 }

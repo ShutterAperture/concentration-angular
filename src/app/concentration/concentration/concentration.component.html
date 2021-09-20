@@ -3,45 +3,50 @@
                  (playerData)="acceptPlayerData($event)"></ca-name-entry>
 
   <!-- Main game area -->
-  <div id="game-set" @insertRemoveTrigger *ngIf="initialized">
-    <div id="game-area">
-      <div id="gameboard">
-        <div id="board">
-          <ca-trilon *ngFor="let trilon of trilonArray; index as i"
-                     [trilonData]="trilon"
-                     [puzzleUrl]="currentPuzzle.url"
-                     (click)="turnToPrize(trilon)"
-                     [puzzleUrlHiRes]="currentPuzzle.urlRetina"></ca-trilon>
+  <div id="game-set" @insertRemoveTrigger *ngIf="initialized" [class.single]="singleMode">
+
+    <div class="end-game__container">
+      <button class="btn_end-game" @insertRemoveTrigger *ngIf="showEndGame" type="button" (click)="giveUp()">End Game
+      </button>
+    </div>
+
+    <div class="game-set__container">
+
+      <div id="game-area">
+        <div id="gameboard">
+          <div id="board">
+            <ca-trilon *ngFor="let trilon of trilonArray; index as i" [trilonData]="trilon"
+                       [puzzleUrl]="currentPuzzle.url" (click)="turnToPrize(trilon)"
+                       [puzzleUrlHiRes]="currentPuzzle.urlRetina"></ca-trilon>
+          </div>
         </div>
-      </div>
 
-      <div class="message-container"><p @insertRemoveTrigger *ngIf="!!message" id="message">{{message}}</p></div>
+        <div class="message-container"><p @insertRemoveTrigger *ngIf="!!message" id="message">{{message}}</p></div>
 
-      <div @insertRemoveTrigger *ngIf="solutionFormVisible">
-        <ca-solution-entry (solutionProposed)="acceptSolution($event)"></ca-solution-entry>
-      </div>
-
-      <form name="endform" id="endform" method="get" action="index.html">
-        <div>
-          <input type="submit" value="OK" id="pickPlayer0" data-playeridx="0">
-          <input type="submit" value="No" id="pickPlayer1" data-playeridx="1">
+        <div @insertRemoveTrigger *ngIf="solutionFormVisible">
+          <ca-solution-entry [showGiveUp]="showGiveUp" (solutionProposed)="acceptSolution($event)"
+                             (giveUpGame)="giveUp()"></ca-solution-entry>
         </div>
-      </form>
 
-      <p @insertRemoveTrigger *ngIf="!!explanation" id="explanation">{{explanation}}</p>
+        <form class="end-form" @insertRemoveTrigger *ngIf="showEndForm">
+          <p>Here's the full puzzle. Click your name to enter the solution.</p>
+          <div>
+            <button type="button" *ngFor="let player of players, index as i"
+                    (click)="acceptFinalName(i)">{{player}}</button>
+          </div>
+        </form>
 
-    </div><!-- end, game board area -->
+        <p @insertRemoveTrigger *ngIf="!!explanation" id="explanation">{{explanation}}</p>
 
-    <div id="contestants">
-      <ca-scoreboard  [players]="players"
-                      [singleMode]="singleMode"
-                      [activeIndex]="activeIndex"
-                      [otherIndex]="otherIndex"
-                      (sentMessage)="setMessage($event)"></ca-scoreboard>
-      <div id="playagain-div" class="inner">
-        <a id="playagain" class="btn">Play Again</a>
-      </div>
-    </div><!-- end, contestants area -->
-    <a id="giveup" class="btn">End Game</a>
+      </div><!-- end, game board area -->
+
+      <div id="contestants">
+        <ca-scoreboard [players]="players" [singleMode]="singleMode" [activeIndex]="activeIndex"
+                       [otherIndex]="otherIndex" (sentMessage)="setMessage($event)"></ca-scoreboard>
+        <div id="playagain-div" class="inner" @insertRemoveTrigger *ngIf="showPlayAgain">
+          <button type="button" (click)="playAgain()">Play Again</button>
+        </div>
+      </div><!-- end, contestants area --></div>
+
   </div><!-- end, game set -->
 </main>

@@ -12,7 +12,7 @@ export class ScoreboardComponent implements OnInit, OnChanges {
   @Input() activeIndex: 0|1 = 0; // holds index of current player
   @Input() otherIndex: 0|1 = 1;  // holds index of other player
   @Output() sentMessage: EventEmitter<string> = new EventEmitter<string>();
-
+  @Output() transferring: EventEmitter<boolean>  = new EventEmitter<boolean>()
   playerPrizes: PlayerPrizes[] = []
   activePlayerPrizes!: PlayerPrizes;
   otherPlayerPrizes!: PlayerPrizes;
@@ -26,7 +26,6 @@ export class ScoreboardComponent implements OnInit, OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges) {
-    console.dir(changes)
     if(changes?.players?.currentValue) {
       this.players = changes.players.currentValue;
       this.playerPrizes = this.players.map(player => ({player, prizes: []}))
@@ -41,6 +40,10 @@ export class ScoreboardComponent implements OnInit, OnChanges {
       this.otherIndex = changes.otherIndex.currentValue;
       this.otherPlayerPrizes = this.playerPrizes[this.otherIndex];
     }
+  }
+
+  getTransferState() {
+    return this.transferState
   }
 
 
@@ -66,7 +69,7 @@ export class ScoreboardComponent implements OnInit, OnChanges {
       }
       else
       {
-        this.setMessage(`${otherPlayer} has no prizes to take. Can you tell us what the puzzle says?`)
+        this.setMessage(`${otherPlayer} has no prizes to take.`)
       }
     } else if(prizeName === 'Forfeit')
     {
@@ -77,7 +80,7 @@ export class ScoreboardComponent implements OnInit, OnChanges {
       }
       else
       {
-        this.setMessage(`You have no prizes to forfeit. Can you tell us what the puzzle says?`)
+        this.setMessage(`You have no prizes to forfeit.`)
       }
     }
   }
@@ -116,8 +119,11 @@ export class ScoreboardComponent implements OnInit, OnChanges {
      return this.playerPrizes[index].player
   }
 
-  clearPrizes(data: any) {
-     alert(data)
+  clearPrizes(clearBoth: boolean = false) {
+    if (this.playerPrizes[this.otherIndex]?.prizes) { this.playerPrizes[this.otherIndex].prizes = [];}
+    if(clearBoth) {
+      this.playerPrizes[this.activeIndex].prizes = [];
+    }
   }
 
   setMessage(message: string) {

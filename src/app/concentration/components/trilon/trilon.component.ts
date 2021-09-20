@@ -1,4 +1,3 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { REBUS_PATH } from '../../constants';
 import { StyleObject, TrilonData } from '../../interfaces';
@@ -9,29 +8,7 @@ export const ADJ_TILE_HEIGHT = 65; // dimensions including borders; used to calc
 @Component({
   selector: 'ca-trilon',
   templateUrl: './trilon.component.html',
-  styleUrls: ['./trilon.component.scss'],
-  animations: [
-    trigger('setTrilonState', [
-      state('number', style({
-        transform: 'translateZ(-28.9px) rotateY(0deg)'
-      })),
-      state('prize', style({
-        transform: 'translateZ(-28.9px) rotateY(-120deg)'
-      })),
-      state('puzzle', style({
-        transform: 'translateZ(-28.9px) rotateY(-240deg)'
-      })),
-      transition('number <=> prize', [
-        animate('0.6s ease-in-out')
-      ]),
-      transition('prize <=> puzzle', [
-        animate('0.6s ease-in-out')
-      ]),
-      transition('number <=> puzzle', [
-        animate('0.6s ease-in-out')
-      ])
-    ])
-  ]
+  styleUrls: ['./trilon.component.scss']
 })
 export class TrilonComponent implements OnChanges {
   @Input() trilonData!: TrilonData
