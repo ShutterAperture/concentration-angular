@@ -1,7 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ScoreboardComponent } from '../components/scoreboard/scoreboard.component';
-import { AVAILABLE_PUZZLES, COMPARISON_INTERVAL, COOL_PRIZES, GAG_PRIZES, MESSAGE_DELAY, NUM_COLS, UTIL_PRIZES } from '../constants';
+import { AVAILABLE_PUZZLES, COMPARISON_INTERVAL, COOL_PRIZES, GAG_PRIZES, NUM_COLS, UTIL_PRIZES } from '../constants';
 import { PlayerData, PuzzlePrize, RandomizedPuzzle, TrilonData } from '../interfaces';
 import { TrilonState } from '../types';
 
@@ -174,6 +174,7 @@ export class ConcentrationComponent implements OnInit {
         if (this.tilePair.length === 2) {
           this.doubleWildState = false;
           this.tilePair = [];
+          this.setMessage(undefined);
         }
       }
       else {
@@ -316,7 +317,7 @@ export class ConcentrationComponent implements OnInit {
 
   setMessage(message: string|undefined, clearAfterDelay: boolean = false): void {
     this.message = message;
-    if (clearAfterDelay) { setTimeout(() => this.message = undefined, MESSAGE_DELAY);}
+    // if (clearAfterDelay) { setTimeout(() => this.message = undefined, MESSAGE_DELAY);}
   };
 
   checkMatchable() {

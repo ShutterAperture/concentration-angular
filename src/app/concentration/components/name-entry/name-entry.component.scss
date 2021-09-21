@@ -27,6 +27,8 @@
     font-size: .9em;
     margin: .25em 0 1em;
   }
+
+
 }
 
 .entry-container {
@@ -79,6 +81,35 @@ button{
   &[disabled] {
     opacity: .5
   }
+}
+
+
+@media screen and (max-width: 700px){
+  #entryform {
+    width: 80%;
+    max-width: calc(100vh - 20px);
+    min-width: unset;
+  }
+
+  .entry-container {
+    flex-direction: column;
+  }
+
+  #two-player {
+    border-right: 0 none;
+
+    &::after {
+      content: 'Or';
+      text-align: center;
+      display: block;
+      padding: 20px;
+    }
+  }
+
+  #one-player {
+    padding-left: 0;
+  }
+
 }
 
 

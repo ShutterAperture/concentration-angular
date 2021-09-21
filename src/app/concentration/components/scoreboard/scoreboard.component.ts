@@ -92,6 +92,7 @@ export class ScoreboardComponent implements OnInit, OnChanges {
       const prizeName = this.removePrize(prize, index);
       const targetIndex = index === 0 ? 1 : 0;
       this.addOrdinaryPrize(prizeName, targetIndex)
+      this.sentMessage.emit(undefined);
     }
   }
 

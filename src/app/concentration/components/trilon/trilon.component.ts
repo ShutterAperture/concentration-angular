@@ -33,19 +33,33 @@ export class TrilonComponent implements OnChanges {
   }
 
   generatePuzzleStyleObject() {
-    const bgtop = -1 * (this.trilonData.row * ADJ_TILE_HEIGHT) + 'px';
-    const bgleft = -1 * (this.trilonData.col * ADJ_TILE_WIDTH) + 'px';
+    let adjustedTileHeight = ADJ_TILE_HEIGHT;
+    let adjustedTileWidth = ADJ_TILE_WIDTH;
+    let backgroundSize =  `492px 390px`
+
+    const mobile = this.window.matchMedia('(max-width: 600px)')
+
+    if(mobile.matches) {
+      adjustedTileHeight = adjustedTileHeight *.6  + 1
+      adjustedTileWidth = adjustedTileWidth * .6 + 1
+      backgroundSize = `295px 234px`
+    }
+
+    const bgtop = -1 * (this.trilonData.row * adjustedTileHeight) + 'px';
+    const bgleft = -1 * (this.trilonData.col * adjustedTileWidth) + 'px';
     let bgPath = `${REBUS_PATH}${this.puzzleUrl}`;
 
-    const mqList = this.window.matchMedia('(min-width: 792px) and (min-resolution: 192dpi)')
-    if(mqList.matches && this.puzzleUrlHiRes) {
+    const retina = this.window.matchMedia('(min-width: 792px) and (min-resolution: 192dpi)')
+
+
+    if(retina.matches && this.puzzleUrlHiRes) {
       bgPath = `${REBUS_PATH}${this.puzzleUrlHiRes}`
     }
 
     this.puzzleStyleObject = {
       backgroundImage : `url(${bgPath})`,
       backgroundPosition: `${bgleft} ${bgtop}`,
-      backgroundSize: `492px 390px`
+      backgroundSize: backgroundSize
     }
   }
 

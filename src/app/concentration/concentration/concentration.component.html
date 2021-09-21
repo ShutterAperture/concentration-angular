@@ -11,7 +11,6 @@
     </div>
 
     <div class="game-set__container">
-
       <div id="game-area">
         <div id="gameboard">
           <div id="board">
@@ -21,11 +20,16 @@
           </div>
         </div>
 
-        <div class="message-container"><p @insertRemoveTrigger *ngIf="!!message" id="message">{{message}}</p></div>
+        <div class="message-container">
+          <p @insertRemoveTrigger *ngIf="!!message" id="message">{{message}}</p>
+        </div>
+        <p @insertRemoveTrigger *ngIf="!!explanation" id="explanation">{{explanation}}</p>
 
-        <div @insertRemoveTrigger *ngIf="solutionFormVisible">
-          <ca-solution-entry [showGiveUp]="showGiveUp" (solutionProposed)="acceptSolution($event)"
-                             (giveUpGame)="giveUp()"></ca-solution-entry>
+        <div *ngIf="!explanation" class="solution-placeholder">
+          <div @insertRemoveTrigger *ngIf="solutionFormVisible">
+            <ca-solution-entry [showGiveUp]="showGiveUp" (solutionProposed)="acceptSolution($event)"
+                               (giveUpGame)="giveUp()"></ca-solution-entry>
+          </div>
         </div>
 
         <form class="end-form" @insertRemoveTrigger *ngIf="showEndForm">
@@ -35,9 +39,6 @@
                     (click)="acceptFinalName(i)">{{player}}</button>
           </div>
         </form>
-
-        <p @insertRemoveTrigger *ngIf="!!explanation" id="explanation">{{explanation}}</p>
-
       </div><!-- end, game board area -->
 
       <div id="contestants">

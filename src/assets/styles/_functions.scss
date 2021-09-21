@@ -1,0 +1,3 @@
+@function random-color() {
+@return unquote("rgb( #{random(256)} , #{random(256)}, #{random(256)})");
+}

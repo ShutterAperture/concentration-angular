@@ -128,3 +128,89 @@
   transform: rotateY(-120deg) translateZ(28.9px);
   -webkit-transform: rotateY(-120deg) translateZ(28.9px);
 }
+
+
+@media only screen and (max-width: 600px) {
+  .trilon {
+    width: 60px;
+    height: 39px;
+
+    &.row0 {
+      top: 1px
+    }
+
+    &.row1 {
+      top: 42px
+    }
+
+    &.row2 {
+      top: 83px
+    }
+
+    &.row3 {
+      top: 124px;
+    }
+
+    &.row4 {
+      top: 165px
+    }
+
+    &.row5 {
+      top: 206px
+    }
+
+    &.col0 {
+      left: 1px
+    }
+
+    &.col1 {
+      left: 63px
+    }
+
+    &.col2 {
+      left: 125px
+    }
+
+    &.col3 {
+      left: 187px
+    }
+
+    &.col4 {
+      left: 249px
+    }
+  }
+
+  .num {
+    .inner {
+      margin: 7px 9px;
+      height: 25px;
+      font: 700 1.2em 'Open Sans', sans-serif;
+      line-height: 1.3;
+    }
+  }
+
+  .prize {
+
+
+    .inner {
+      font-size: .65em;
+      letter-spacing: -.05em;
+      line-height: 1;
+
+      /* Take/Forfeit */
+      .transfer {
+        font-size: 1.1em;
+      }
+
+      &.wildcard {
+        color: #F9CA2F;
+        font-weight: 700;
+        font-size: 1em;
+        font-style: italic;
+        line-height: 1.1;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+}

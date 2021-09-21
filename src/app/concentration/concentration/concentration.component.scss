@@ -1,5 +1,6 @@
 @import "variables";
 @import "mixins";
+@import "functions";
 
 /* Overall container for board and score...the show's set */
 #game-set {
@@ -58,12 +59,13 @@
   margin: 0;
   background: #000;
   border: 1px solid #797979;
-  width: 500px;
-  height: 390px;
+  width: 100%;
+  height: 100%;
 }
 
 .message-container {
   height: 30px;
+  width: 100%;
 }
 
 button {
@@ -78,7 +80,6 @@ button {
 }
 
 .end-form {
-
   width: 500px;
   border: 1px solid #E5E5E5;
   padding: 12px;
@@ -104,10 +105,44 @@ button {
   font-weight: 600;
   font-size: 1em;
   border-radius: 16px;
-  border: 1px solid rgba(0, 0, 0, .7);
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, .5);
   width: 500px;
   margin: auto;
+  padding: 0 8px;
   text-align: center;
 }
 
+@media only screen and (max-width: 600px) {
+  #game-set {
+    padding-top: 0;
+    width: calc(100% - 40px);
+    min-width: unset !important;
+
+    .game-set__container {
+      padding-top: 0;
+      flex-direction: column;
+    }
+  }
+
+  #game-area {
+
+    width: 60%;
+    min-width: 100%;
+  }
+
+  #gameboard {
+    width: 310px;
+    height: 246px;
+    overflow: hidden;
+    padding: 8px;
+  }
+
+  #message,
+  #explanation {
+    width: 320px;
+    font-size: .9em;
+  }
+
+  .solution-placeholder {
+    height: 120px;
+  }
+}
