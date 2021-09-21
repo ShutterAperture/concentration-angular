@@ -3,7 +3,7 @@
   <div class="container" *ngFor="let playerPrize of playerPrizes, index as i" [ngClass]="'player-' + i">
     <h3 [class.current]="i === activeIndex">{{playerPrize.player}}</h3>
     <ul>
-      <li *ngFor="let prize of playerPrize.prizes" (click)="executeTransfer(prize, i)">
+      <li @insertRemoveTrigger *ngFor="let prize of playerPrize.prizes" (click)="executeTransfer(prize, i)">
         <span class="marker" [class.duplicate]="prize.duplicate"><span *ngIf="prize.duplicate">&radic;</span></span>
         <span class="prize">{{prize.prize}}</span>
       </li>
