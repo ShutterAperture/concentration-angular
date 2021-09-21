@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { SolutionEntryComponent } from './solution-entry.component';
 
@@ -8,6 +9,7 @@ describe('SolutionEntryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule],
       declarations: [ SolutionEntryComponent ]
     })
     .compileComponents();
