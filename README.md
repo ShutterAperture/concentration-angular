@@ -1,4 +1,8 @@
 # ConcentrationAngular
+This is a reproduction of Concentration, which ran on NBC from the late 50's to 1973. The object of the game 
+is to figure out what the puzzle means. You expose puzzle pieces by matching prizes. 
+Each match reveals a pair of pieces. This project is a re-implementation of my earlier Concentration game written
+in Angular rather than jQuery, and addresses a number of issues with the previous version.
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.5.
 
