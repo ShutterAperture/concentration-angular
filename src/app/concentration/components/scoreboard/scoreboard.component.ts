@@ -1,5 +1,5 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { PlayerPrizes, Prize } from '../../interfaces';
 
 @Component({
@@ -18,7 +18,7 @@ import { PlayerPrizes, Prize } from '../../interfaces';
     ])
   ]
 })
-export class ScoreboardComponent implements OnInit, OnChanges {
+export class ScoreboardComponent implements OnChanges {
   @Input() players: string[] = [];
   @Input() singleMode = false;
   @Input() activeIndex: 0 | 1 = 0; // holds index of current player
@@ -31,11 +31,7 @@ export class ScoreboardComponent implements OnInit, OnChanges {
 
   transferState: null | 'Take' | 'Forfeit' = null;
 
-  constructor() {
-  }
-
-  ngOnInit(): void {
-  }
+  constructor() { }
 
   public ngOnChanges(changes: SimpleChanges) {
     if (changes?.players?.currentValue) {
@@ -76,7 +72,7 @@ export class ScoreboardComponent implements OnInit, OnChanges {
     const otherPlayer = this.getPlayerName(this.otherIndex);
     if (prizeName === 'Take') {
       if (this.playerPrizes[this.otherIndex].prizes.length > 0) {
-        this.setMessage(`${currentPlayer}, you may take one of ${otherPlayer} \'s prizes`);
+        this.setMessage(`${currentPlayer}, you may take one of ${otherPlayer}\'s prizes`);
         this.transferState = 'Take';
       }
       else {
@@ -85,7 +81,7 @@ export class ScoreboardComponent implements OnInit, OnChanges {
     }
     else if (prizeName === 'Forfeit') {
       if (this.playerPrizes[this.activeIndex].prizes.length > 0) {
-        this.setMessage(`${currentPlayer}, you must give ${otherPlayer} one of your prizes`);
+        this.setMessage(`${currentPlayer}, you must give ${otherPlayer} one of your prizes.`);
         this.transferState = 'Forfeit';
       }
       else {
