@@ -50,8 +50,6 @@ export class TrilonComponent implements OnChanges {
     let bgPath = `${REBUS_PATH}${this.puzzleUrl}`;
 
     const retina = this.window.matchMedia('(min-width: 792px) and (min-resolution: 192dpi)')
-
-
     if(retina.matches && this.puzzleUrlHiRes) {
       bgPath = `${REBUS_PATH}${this.puzzleUrlHiRes}`
     }

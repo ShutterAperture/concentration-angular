@@ -43,7 +43,7 @@ describe('SolutionEntryComponent', () => {
   });
 
   describe('giveUp', () => {
-    it('should emit out ____________', () => {
+    it('should emit out giveUpGame when called', () => {
       spyOn(component.giveUpGame, 'emit')
       component.giveUp();
       expect(component.giveUpGame.emit).toHaveBeenCalled()

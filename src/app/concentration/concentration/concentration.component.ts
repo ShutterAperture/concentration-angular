@@ -1,7 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ScoreboardComponent } from '../components/scoreboard/scoreboard.component';
-import { AVAILABLE_PUZZLES, COMPARISON_INTERVAL, COOL_PRIZES, GAG_PRIZES, NUM_COLS, UTIL_PRIZES } from '../constants';
+import { AVAILABLE_PUZZLES, COMPARISON_INTERVAL, COOL_PRIZES, GAG_PRIZES, MESSAGE_DELAY, NUM_COLS, UTIL_PRIZES } from '../constants';
 import { PlayerData, PuzzlePrize, RandomizedPuzzle, TrilonData } from '../interfaces';
 import { TrilonState } from '../types';
 
@@ -203,10 +203,6 @@ export class ConcentrationComponent implements OnInit {
 
   actOnMatch(match: boolean) {
 
-
-
-
-
     if (match) {
       let prizeWon = this.tilePair[0].prizeName;
       // Pull numbers off the unmatched Array
@@ -244,8 +240,8 @@ export class ConcentrationComponent implements OnInit {
       const newState = match ? 'puzzle' : 'number';
       this.tilePair.forEach(trilonData => trilonData.trilonState = newState);
       this.tilePair = [];
-    }
-    setTimeout(cleanUpSelection, COMPARISON_INTERVAL)
+    };
+    setTimeout(cleanUpSelection, COMPARISON_INTERVAL);
 
   }
 
@@ -315,9 +311,9 @@ export class ConcentrationComponent implements OnInit {
     this.showEndGame = false;
   }
 
-  setMessage(message: string|undefined, clearAfterDelay: boolean = false): void {
+  setMessage(message: string | undefined, clearAfterDelay: boolean = false): void {
     this.message = message;
-    // if (clearAfterDelay) { setTimeout(() => this.message = undefined, MESSAGE_DELAY);}
+    if (clearAfterDelay) { setTimeout(() => this.message = undefined, MESSAGE_DELAY);}
   };
 
   checkMatchable() {
@@ -361,7 +357,8 @@ export class ConcentrationComponent implements OnInit {
     this.otherIndex = index === 0 ? 1 : 0;
     this.activePlayer = this.players[this.activeIndex];
     this.otherPlayer = this.players[this.otherIndex];
-    this.setMessage(`${this.activePlayer}, enter your solution, or use the Cancel button to give ${this.otherPlayer} a chance to solve it'`);
+    this.setMessage(
+      `${this.activePlayer}, enter your solution, or use the Cancel button to give ${this.otherPlayer} a chance to solve it'`);
     this.showEndForm = false;
     this.showSolutionForm();
   }
