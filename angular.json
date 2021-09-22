@@ -15,7 +15,7 @@
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "app",
+      "prefix": "ca",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -117,9 +117,21 @@
             },
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
-  "defaultProject": "concentration-angular"
+  "defaultProject": "concentration-angular",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
 }
