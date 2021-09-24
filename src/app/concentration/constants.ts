@@ -17,7 +17,7 @@ export const AVAILABLE_PUZZLES: Puzzle[] = [
   {
     url: 'pzzl-002.gif',
     urlRetina: 'pzzl-002-2x.gif',
-    explanation: '2 + Bee + Or + Knot + 2 + Bee',
+    explanation: '2 + Bee + Oar + Knot + 2 + Bee',
     solution: 'To be, or not to be'
   },
   {

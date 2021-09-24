@@ -148,6 +148,7 @@ export class ConcentrationComponent implements OnInit {
       };
     });
     this.unmatched = this.trilonArray.map(trilonData => trilonData.visibleNumber);
+    console.table(this.trilonArray)
   }
 
   generatePuzzlePrizes(prizeArray: string[]): PuzzlePrize[] {
@@ -170,11 +171,14 @@ export class ConcentrationComponent implements OnInit {
       this.tilePair.push(trilonData);
       if (this.doubleWildState) {
         this.scoreboardComponent.addPrize(trilonData.prizeName);
-        trilonData.trilonState = 'puzzle';
-        if (this.tilePair.length === 2) {
+        // trilonData.trilonState = 'puzzle';
+        if (this.tilePair.length === 4) {
           this.doubleWildState = false;
+          const tilePair = [...this.tilePair]
+
           this.tilePair = [];
           this.setMessage(undefined);
+          setTimeout(() => tilePair.forEach(td => td.trilonState = 'puzzle'), COMPARISON_INTERVAL)
         }
       }
       else {
@@ -212,6 +216,7 @@ export class ConcentrationComponent implements OnInit {
       if (this.tilePair[0].prizeName === 'Wild' && this.tilePair[1].prizeName === 'Wild') {
         this.doubleWildState = true;
         this.setMessage('Congratulations! Pick two more prizes.');
+
       }
       else {
         this.scoreboardComponent.addPrize(prizeWon);
@@ -236,7 +241,12 @@ export class ConcentrationComponent implements OnInit {
       this.tilePair.forEach(trilonData => trilonData.trilonState = newState);
       this.tilePair = [];
     };
-    setTimeout(cleanUpSelection, COMPARISON_INTERVAL);
+    if (this.doubleWildState) {
+      this.clickAllowed = true;
+    }
+    else {
+      setTimeout(cleanUpSelection, COMPARISON_INTERVAL);
+    }
 
   }
 

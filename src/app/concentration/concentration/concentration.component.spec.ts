@@ -326,12 +326,14 @@ describe('ConcentrationComponent', () => {
     });
     it('should handle the double-wild state', () => {
       component.doubleWildState = true;
+      const wild1 = {...MOCK_TRILON_ARRAY[21]};
+      const wild2 = {...MOCK_TRILON_ARRAY[25]}
       const testTrilon = { ...MOCK_TRILON_ARRAY[1] };
       const firstNumber = { ...MOCK_TRILON_ARRAY[10] };
-      component.tilePair = [ firstNumber ];
+      component.tilePair = [ wild1, wild2, firstNumber ];
       component.handleTrilonClick(testTrilon);
       expect(component.scoreboardComponent.addPrize).toHaveBeenCalledWith(testTrilon.prizeName);
-      expect(testTrilon.trilonState).toBe('puzzle');
+      expect(testTrilon.trilonState).toBe('prize');
       expect(component.doubleWildState).toBe(false);
       expect(component.tilePair).toEqual([]);
       expect(component.setMessage).toHaveBeenCalledWith(undefined);
