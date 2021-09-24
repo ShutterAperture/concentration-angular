@@ -159,7 +159,7 @@ export class ConcentrationComponent implements OnInit {
   }
 
   // Function to turn an individual number to the prize face
-  turnToPrize(trilonData: TrilonData) {
+  handleTrilonClick(trilonData: TrilonData) {
     if (this.clickAllowed && this.scoreboardComponent.getTransferState() === null) {
       this.hideSolutionForm();
       const currentState = trilonData.trilonState;
@@ -178,14 +178,12 @@ export class ConcentrationComponent implements OnInit {
         }
       }
       else {
-        if (this.tilePair.length == 2) {this.testPrizes();}
+        if (this.tilePair.length == 2) {this.testForMatch();}
       }
-
     }
-
   }
 
-  testPrizes() {
+  testForMatch() {
     const match = this.tilePair.some(tile => tile.prizeName === 'Wild') || this.tilePair[0].prizeName === this.tilePair[1].prizeName;
     this.clickAllowed = false;
 
@@ -193,11 +191,8 @@ export class ConcentrationComponent implements OnInit {
       this.actOnMatch(match);
     }
     else {
-      setTimeout(() => this.actOnMatch(match), COMPARISON_INTERVAL);
-    }
-
-    if (!match) {
       this.setMessage('Sorry, that\'s not a match.');
+      setTimeout(() => this.actOnMatch(match), COMPARISON_INTERVAL);
     }
   }
 
@@ -213,6 +208,7 @@ export class ConcentrationComponent implements OnInit {
         prizeWon = this.tilePair[1].prizeName;
       }
 
+      // If the player happens to pick both Wild Cards, they get to pick two more prizes
       if (this.tilePair[0].prizeName === 'Wild' && this.tilePair[1].prizeName === 'Wild') {
         this.doubleWildState = true;
         this.setMessage('Congratulations! Pick two more prizes.');
@@ -224,13 +220,12 @@ export class ConcentrationComponent implements OnInit {
       this.showSolutionForm();
     }
     else {
-      this.switchPlayers();
-
+      const clearAfterDelay = true;
       if (!this.singleMode) {
-        this.setMessage(`${this.activePlayer}, your turn.`, true);
+        this.switchPlayers();
+        this.setMessage(`${this.activePlayer}, your turn.`, clearAfterDelay);
       }
       else {
-        const clearAfterDelay = true;
         this.setMessage('Try Again', clearAfterDelay);
       }
     }
@@ -269,7 +264,7 @@ export class ConcentrationComponent implements OnInit {
     if (solution !== null) {
       solution = solution.replace(/\W/gi, '');
       solution = solution.toLowerCase(); //strip out non-alphabetical characters, and set to lower case, for less strict checking.
-      //alert(solutionString + '\n' + thisPuzzle.compareString)
+
       if (solution === this.currentPuzzle.compareString) {
         const clearBoth = false;
         const doCheck = false;
@@ -340,7 +335,7 @@ export class ConcentrationComponent implements OnInit {
     this.clickAllowed = false; // stop the clicking
     this.setBoardState('puzzle');
 
-    this.finalGuess = true; //
+    this.finalGuess = true;
 
     if (this.singleMode) {
       this.setMessage('There are no more matches. Enter the solution, or click the Give Up button to end the game.');
@@ -358,7 +353,7 @@ export class ConcentrationComponent implements OnInit {
     this.activePlayer = this.players[this.activeIndex];
     this.otherPlayer = this.players[this.otherIndex];
     this.setMessage(
-      `${this.activePlayer}, enter your solution, or use the Cancel button to give ${this.otherPlayer} a chance to solve it'`);
+      `${this.activePlayer}, enter your solution, or use the Cancel button to give ${this.otherPlayer} a chance to solve it.`);
     this.showEndForm = false;
     this.showSolutionForm();
   }

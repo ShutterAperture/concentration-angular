@@ -15,7 +15,7 @@
         <div id="gameboard">
           <div id="board">
             <ca-trilon *ngFor="let trilon of trilonArray; index as i" [trilonData]="trilon"
-                       [puzzleUrl]="currentPuzzle.url" (click)="turnToPrize(trilon)"
+                       [puzzleUrl]="currentPuzzle.url" (click)="handleTrilonClick(trilon)"
                        [puzzleUrlHiRes]="currentPuzzle.urlRetina"></ca-trilon>
           </div>
         </div>
