@@ -43,6 +43,12 @@ export const AVAILABLE_PUZZLES: Puzzle[] = [
     urlRetina: 'pzzl-006-2x.gif',
     explanation: 'Wood + U + Bee + M + Eye + VAL + Hen + Tie + N',
     solution: 'Would you be my Valentine?'
+  },
+  {
+    url: 'pzzl-007.gif',
+    urlRetina: 'pzzl-007-2x.gif',
+    explanation: 'Head + Ham + Pen + ed  1 + N + Eye + T',
+    solution: 'It happened one night'
   }
 ];
 
