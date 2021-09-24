@@ -148,7 +148,6 @@ export class ConcentrationComponent implements OnInit {
       };
     });
     this.unmatched = this.trilonArray.map(trilonData => trilonData.visibleNumber);
-    console.table(this.trilonArray)
   }
 
   generatePuzzlePrizes(prizeArray: string[]): PuzzlePrize[] {
