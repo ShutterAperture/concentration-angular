@@ -139,6 +139,7 @@ button {
   #message,
   #explanation {
     width: 320px;
+    max-width: calc(100% - 30px);
     font-size: .9em;
   }
 
