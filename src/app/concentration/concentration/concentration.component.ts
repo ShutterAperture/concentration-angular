@@ -378,6 +378,7 @@ export class ConcentrationComponent implements OnInit {
   }
 
   playAgain() {
+    this.clickAllowed = true;
     this.showExplanation = false;
     this.explanation = undefined;
     this.setMessage(undefined);

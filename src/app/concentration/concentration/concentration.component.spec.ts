@@ -688,6 +688,8 @@ describe('ConcentrationComponent', () => {
 
       expect(component.showExplanation).toBe(false);
       expect(component.explanation).toBe(undefined);
+      expect(component.clickAllowed).toBe(true);
+
       expect(component.setMessage).toHaveBeenCalledWith(undefined);
       expect(component.setBoardState).toHaveBeenCalledWith('number');
       expect(component.showPlayAgain).toBe(false);
