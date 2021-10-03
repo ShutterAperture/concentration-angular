@@ -694,9 +694,7 @@ describe('ConcentrationComponent', () => {
       expect(component.setBoardState).toHaveBeenCalledWith('number');
       expect(component.showPlayAgain).toBe(false);
       expect(component.showEndGame).toBe(true);
-
       expect(component.scoreboardComponent.clearPrizes).toHaveBeenCalledWith(true);
-
       expect(component.puzzleIndex).toBe(2);
     });
     it('should start over if all puzzles have been played', () => {
