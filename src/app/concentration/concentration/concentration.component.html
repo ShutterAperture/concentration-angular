@@ -6,18 +6,23 @@
   <div id="game-set" @insertRemoveTrigger *ngIf="initialized" [class.single]="singleMode">
 
     <div class="end-game__container">
+
       <button class="btn_end-game" @insertRemoveTrigger *ngIf="showEndGame" type="button" (click)="giveUp()">End Game
       </button>
     </div>
 
     <div class="game-set__container">
       <div id="game-area">
+
         <div id="gameboard">
+          <ca-game-option (optionChanged)="acceptGameOptions($event)"></ca-game-option>
           <div id="board">
             <ca-trilon *ngFor="let trilon of trilonArray; index as i" [trilonData]="trilon"
                        [puzzleUrl]="currentPuzzle.url" (click)="handleTrilonClick(trilon)"
+                       [ngClass]="{narz: gameOptions?.narzAppearance, blumenthal: gameOptions?.blumenthalPuzzles}"
                        [puzzleUrlHiRes]="currentPuzzle.urlRetina"></ca-trilon>
           </div>
+
         </div>
 
         <div class="message-container">

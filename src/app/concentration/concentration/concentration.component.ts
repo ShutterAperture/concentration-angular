@@ -1,11 +1,12 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { fromEvent } from 'rxjs';
+import { delay, mergeMap, take, tap } from 'rxjs/operators';
 import { ScoreboardComponent } from '../components/scoreboard/scoreboard.component';
-import { AVAILABLE_PUZZLES, COMPARISON_INTERVAL, COOL_PRIZES, GAG_PRIZES, MESSAGE_DELAY, NUM_COLS, UTIL_PRIZES } from '../constants';
-import { PlayerData, PuzzlePrize, RandomizedPuzzle, TrilonData } from '../interfaces';
+import { COMPARISON_INTERVAL, DEFAULT_GAME_OPTIONS, MESSAGE_DELAY, PLAY_AGAIN_DELAY, TRILON_SOUND_SOURCE } from '../constants';
+import { GameOptions, PlayerData, RandomizedPuzzle, TrilonData } from '../interfaces';
+import { PuzzleService } from '../services/puzzle.service';
 import { TrilonState } from '../types';
-
-const prizeSorter = (a: PuzzlePrize | RandomizedPuzzle, b: PuzzlePrize | RandomizedPuzzle) => a.rand - b.rand;
 
 @Component({
   selector: 'ca-concentration',
@@ -28,14 +29,14 @@ export class ConcentrationComponent implements OnInit {
   players: string[] = [];
   trilonArray: TrilonData[] = [];
   initialState: TrilonState = 'number';
-  puzzleArray: RandomizedPuzzle[] = [];
-  puzzleIndex = 0;
   currentPuzzle!: RandomizedPuzzle;
 
   prizeName: string = '';
 
   tilePair: TrilonData[] = [];
   unmatched: number[] = []; // array of unmatched puzzle numbers
+
+  trilonSound!: HTMLAudioElement;
 
   // Player tracking
   activePlayer: string = '';
@@ -61,14 +62,17 @@ export class ConcentrationComponent implements OnInit {
   showEndGame = true;
   finalGuess = false; // this is the last guess.
 
+  firstPlay = true;
+
+  gameOptions: GameOptions = DEFAULT_GAME_OPTIONS;
+
   @ViewChild(ScoreboardComponent) scoreboardComponent!: ScoreboardComponent;
 
-  constructor() {
-  }
+  constructor(private puzzleService: PuzzleService) { }
 
   ngOnInit(): void {
-    this.initializePuzzles();
-    this.setPuzzle();
+    this.initTrilonSound();
+    this.puzzleService.getPuzzle().pipe(take(1)).subscribe(puzzle => this.currentPuzzle = puzzle);
   }
 
   acceptPlayerData(playerData: PlayerData) {
@@ -83,79 +87,37 @@ export class ConcentrationComponent implements OnInit {
       this.activeIndex = 1; // switchPlayers will set it back to 0
       this.switchPlayers();
     }
-    this.initializePrizes();
-    this.clickAllowed = true;
+    this.fetchTrilonArray();
   }
 
-  initializePuzzles() {
-    this.puzzleArray = AVAILABLE_PUZZLES.map(puzzle => ({
-      ...puzzle,
-      rand: Math.random(),
-      compareString: puzzle.solution.replace(/\W/gi, '').toLowerCase()
-    })).sort(prizeSorter);
+  initTrilonSound() {
+    this.trilonSound = new Audio(TRILON_SOUND_SOURCE);
+    this.trilonSound.volume = .24;
   }
 
-  setPuzzle() {
-    this.currentPuzzle = this.puzzleArray[this.puzzleIndex];
-  }
-
-  initializePrizes() {
-    let coolPrizes: PuzzlePrize[] = this.generatePuzzlePrizes(COOL_PRIZES);
-    let gagPrizes: PuzzlePrize[] = this.generatePuzzlePrizes(GAG_PRIZES);
-    let utilPrizes: PuzzlePrize[];
-    let goodPrizeCount = 8;
-    if (this.singleMode) {
-      utilPrizes = this.generatePuzzlePrizes([ 'Wild' ]); // Take and Forfeit are meaningless in single mode.
-      goodPrizeCount = 12; // Compensate for absent transfer prizes
+  playTrilon() {
+    if (this.gameOptions.enableSound) {
+      if(this.firstPlay || this.trilonSound.ended) {
+        this.trilonSound.play();
+        this.firstPlay = false;
+      } else {
+        fromEvent(this.trilonSound, 'ended')
+          .pipe(take(1))
+          .subscribe(() => this.trilonSound.play());
+      }
     }
-    else {
-      utilPrizes = this.generatePuzzlePrizes(UTIL_PRIZES);
-    }
-
-    let rawPrizeArray = [ ...utilPrizes ];
-    rawPrizeArray = [ ...rawPrizeArray, ...coolPrizes.slice(0, goodPrizeCount) ]; // pick off the first 10 or 12 cool prizes
-    rawPrizeArray = [ ...rawPrizeArray, ...gagPrizes.slice(0, 2) ]; // pick off the first 2 gag prizes
-
-    // Create a match for each prize
-    let intermediateArray: PuzzlePrize[] = [];
-    rawPrizeArray.forEach(rawPrize => {
-      intermediateArray = [
-        ...intermediateArray, {
-          ...rawPrize,
-          rand: Math.random()
-        }, {
-          ...rawPrize,
-          rand: Math.random()
-        }
-      ];
-    });
-
-    intermediateArray.sort(prizeSorter); // Order them by the rand property; this shuffles the match
-
-    this.setTrilonArray(intermediateArray);
   }
 
-  setTrilonArray(prizeArray: PuzzlePrize[]) {
-    this.trilonArray = prizeArray.map((prize, index) => {
-      const visibleNumber = index + 1;
+  fetchTrilonArray() {
+    this.puzzleService.getTrilonData(this.singleMode, this.initialState)
+      .pipe(take(1))
+      .subscribe((trilonData: TrilonData[]) => this.setTrilonArray(trilonData));
+  }
 
-      return {
-        trilonState: this.initialState,
-        visibleNumber,
-        prizeName: prize.prizeName,
-        row: Math.floor(index / NUM_COLS),
-        col: visibleNumber % NUM_COLS ? index % NUM_COLS : NUM_COLS - 1
-      };
-    });
+  setTrilonArray(trilonData: TrilonData[]) {
+    this.trilonArray = trilonData;
     this.unmatched = this.trilonArray.map(trilonData => trilonData.visibleNumber);
-  }
-
-  generatePuzzlePrizes(prizeArray: string[]): PuzzlePrize[] {
-    let puzzlePrizes = prizeArray.map(prizeName => ({
-      prizeName,
-      rand: Math.random()
-    }));
-    return puzzlePrizes.sort(prizeSorter);
+    this.clickAllowed = true;
   }
 
   // Function to turn an individual number to the prize face
@@ -165,19 +127,22 @@ export class ConcentrationComponent implements OnInit {
       const currentState = trilonData.trilonState;
       if (currentState != 'number' && currentState != this.initialState) {return;} // bail if not turned to the number face
       trilonData.trilonState = 'prize';
+      this.playTrilon()
       this.prizeName = trilonData.prizeName;
 
       this.tilePair.push(trilonData);
       if (this.doubleWildState) {
         this.scoreboardComponent.addPrize(trilonData.prizeName);
-        // trilonData.trilonState = 'puzzle';
         if (this.tilePair.length === 4) {
           this.doubleWildState = false;
           const tilePair = [...this.tilePair]
 
           this.tilePair = [];
           this.setMessage(undefined);
-          setTimeout(() => tilePair.forEach(td => td.trilonState = 'puzzle'), COMPARISON_INTERVAL)
+          setTimeout(() => tilePair.forEach(td => {
+            td.trilonState = 'puzzle';
+            this.playTrilon()
+          }), COMPARISON_INTERVAL)
         }
       }
       else {
@@ -215,7 +180,6 @@ export class ConcentrationComponent implements OnInit {
       if (this.tilePair[0].prizeName === 'Wild' && this.tilePair[1].prizeName === 'Wild') {
         this.doubleWildState = true;
         this.setMessage('Congratulations! Pick two more prizes.');
-
       }
       else {
         this.scoreboardComponent.addPrize(prizeWon);
@@ -238,6 +202,7 @@ export class ConcentrationComponent implements OnInit {
       this.clickAllowed = true; // allow more numbers to be chosen
       const newState = match ? 'puzzle' : 'number';
       this.tilePair.forEach(trilonData => trilonData.trilonState = newState);
+      this.playTrilon()
       this.tilePair = [];
     };
     if (this.doubleWildState) {
@@ -295,6 +260,7 @@ export class ConcentrationComponent implements OnInit {
 
   setBoardState(trilonState: TrilonState) {
     this.trilonArray.forEach(trilonData => trilonData.trilonState = trilonState);
+    this.playTrilon()
   }
 
   revealBoard(clearBoth: boolean) {
@@ -388,16 +354,20 @@ export class ConcentrationComponent implements OnInit {
     this.showEndGame = true;
     const clearBoth = true;
     this.scoreboardComponent.clearPrizes(clearBoth);
+    this.puzzleService.advanceToNextPuzzle();
 
-    this.puzzleIndex++;
-    if (this.puzzleIndex == this.puzzleArray.length) {this.puzzleIndex = 0;}
+    this.puzzleService.getPuzzle()
+      .pipe(
+        delay(PLAY_AGAIN_DELAY),
+        tap((puzzle: RandomizedPuzzle) => this.currentPuzzle = puzzle),
+        mergeMap(() => this.puzzleService.getTrilonData(this.singleMode, this.initialState))
+      )
+      .subscribe(trilonData => this.setTrilonArray(trilonData));
+  }
 
-    const actualReset = () => {
-      this.setPuzzle();
-      this.initializePrizes();
-    };
-    setTimeout(actualReset, 1600); //run the reset code after allowing the visual reset
-
+  acceptGameOptions(gameOptions: GameOptions) {
+    this.gameOptions = gameOptions;
+    this.trilonSound.volume = this.gameOptions.volume
   }
 
 }

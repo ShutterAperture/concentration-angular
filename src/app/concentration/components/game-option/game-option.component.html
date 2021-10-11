@@ -1,0 +1,32 @@
+<section class="game-options">
+  <header class="game-options__title" >
+    <h1 (click)="toggleMenu($event, true)">Options</h1>
+  </header>
+  <svg viewBox="0 0 100 80" width="20" height="20" class="game-options__icon" (click)="toggleMenu($event, true)">
+    <rect width="100" height="20"></rect>
+    <rect y="30" width="100" height="20"></rect>
+    <rect y="60" width="100" height="20"></rect>
+  </svg>
+
+
+  <form @insertRemoveTrigger *ngIf="showMenu" [formGroup]="optionForm" class="game-options__menu" (mouseleave)="toggleMenu($event, false)">
+  <ul>
+    <li class="game-options__volume">
+      <input type="range" min="0" max="1" formControlName="volume" step=".01" id="opt-volume">
+      <label for="opt-volume">Sound</label>
+    </li>
+    <li>
+      <input type="checkbox" id="opt-blumenthal-puzzle" formControlName="blumenthalPuzzles">
+      <label for="opt-blumenthal-puzzle">Gray scale puzzles</label>
+    </li>
+    <li>
+      <input type="checkbox" id="opt-narz-mode" formControlName="narzAppearance">
+      <label for="opt-narz-mode">Jack Narz style numbers</label>
+    </li>
+    <li>
+      <button class="game-options__reset" type="button" (click)="resetOptions()">Reset</button>
+    </li>
+  </ul>
+
+  </form>
+</section>

@@ -1,0 +1,73 @@
+.game-options {
+  position: relative;
+}
+
+.game-options__title {
+  margin-left: 5px;
+
+  h1 {
+    display: inline-block;
+    margin: 0;
+    font-size: 12px;
+    cursor: pointer;
+  }
+}
+
+.game-options__icon {
+  display: none;
+}
+
+.game-options__menu {
+  position: absolute;
+  top: 25px;
+  background: #FFF;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, .3);
+  z-index: 20;
+  border-radius: 4px;
+
+  ul {
+    margin: 0;
+    padding: 8px;
+    list-style-type: none;
+    text-align: left;
+    font-size: 14px;
+
+    li {
+      white-space: nowrap;
+      padding: 4px 0;
+    }
+  }
+}
+
+.game-options__volume {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  label {
+    margin-left: 5px;
+  }
+}
+
+.game-options__reset {
+  margin-top: 8px;
+  background: none;
+  border-style: none;
+  color: #AA4612;
+}
+
+@media only screen and (max-width: 600px) {
+  .game-options__title {
+    display: none;
+  }
+  .game-options__icon {
+    display: block;
+    fill: #000;
+    margin-left: 10px;
+  }
+
+  .game-options__menu {
+    left: 10px;
+  }
+}

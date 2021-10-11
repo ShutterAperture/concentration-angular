@@ -1,11 +1,13 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { of } from 'rxjs';
 import { MOCK_RANDOMIZED_PUZZLE_ARRAY } from '../../../mocks/randomized-puzzle-array-mock';
 import { MOCK_TRILON_ARRAY } from '../../../mocks/trilon-array-mock';
 import { ScoreboardComponent } from '../components/scoreboard/scoreboard.component';
-import { AVAILABLE_PUZZLES, COMPARISON_INTERVAL, COOL_PRIZES, GAG_PRIZES, MESSAGE_DELAY, UTIL_PRIZES } from '../constants';
-import { PuzzlePrize, RandomizedPuzzle, TrilonData } from '../interfaces';
+import { COMPARISON_INTERVAL, DEFAULT_GAME_OPTIONS, MESSAGE_DELAY, PLAY_AGAIN_DELAY, TRILON_SOUND_SOURCE } from '../constants';
+import { TrilonData } from '../interfaces';
+import { PuzzleService } from '../services/puzzle.service';
 import { TrilonState } from '../types';
 
 import { ConcentrationComponent } from './concentration.component';
@@ -13,13 +15,16 @@ import { ConcentrationComponent } from './concentration.component';
 const unmatchedBoard: number[] = [];
 for (let i = 1; i <= 30; i++) {unmatchedBoard.push(i);}
 
+const getFreshTrilonData = () => MOCK_TRILON_ARRAY.map(td => ({...td}))
+
 describe('ConcentrationComponent', () => {
   let component: ConcentrationComponent;
   let fixture: ComponentFixture<ConcentrationComponent>;
-
+  let puzzleService: PuzzleService;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
         imports: [ NoopAnimationsModule ],
+        providers: [ PuzzleService ],
         declarations: [ ConcentrationComponent, ScoreboardComponent ],
         schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
       })
@@ -30,6 +35,8 @@ describe('ConcentrationComponent', () => {
     fixture = TestBed.createComponent(ConcentrationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    puzzleService = TestBed.inject(PuzzleService);
+    component.gameOptions.enableSound = false;
 
   });
 
@@ -39,12 +46,12 @@ describe('ConcentrationComponent', () => {
 
   describe('ngOnInit', () => {
     it('should set up the puzzles ', () => {
-      spyOn(component, 'initializePuzzles').and.callThrough();
-      spyOn(component, 'setPuzzle').and.callThrough();
+      spyOn(puzzleService, 'getPuzzle').and.callThrough();
+      spyOn(component, 'initTrilonSound');
 
       component.ngOnInit();
-      expect(component.initializePuzzles).toHaveBeenCalled();
-      expect(component.setPuzzle).toHaveBeenCalled();
+      expect(puzzleService.getPuzzle).toHaveBeenCalled();
+      expect(component.initTrilonSound).toHaveBeenCalled();
     });
   });
 
@@ -52,7 +59,7 @@ describe('ConcentrationComponent', () => {
     beforeEach(() => {
       component.clickAllowed = false;
       component.initialized = false;
-      spyOn(component, 'initializePrizes');
+      spyOn(component, 'fetchTrilonArray');
     });
     it('should accept two-handed player data', () => {
       spyOn(component, 'switchPlayers');
@@ -60,10 +67,9 @@ describe('ConcentrationComponent', () => {
         singleMode: false,
         players: [ 'Fred', 'Barney' ]
       });
-      expect(component.clickAllowed).toBe(true);
       expect(component.initialized).toBe(true);
       expect(component.singleMode).toBe(false);
-      expect(component.initializePrizes).toHaveBeenCalled();
+      expect(component.fetchTrilonArray).toHaveBeenCalled();
       expect(component.players).toEqual([ 'Fred', 'Barney' ]);
       expect(component.switchPlayers).toHaveBeenCalled();
     });
@@ -72,219 +78,58 @@ describe('ConcentrationComponent', () => {
         singleMode: true,
         players: []
       });
-      expect(component.clickAllowed).toBe(true);
       expect(component.initialized).toBe(true);
       expect(component.singleMode).toBe(true);
-      expect(component.initializePrizes).toHaveBeenCalled();
+      expect(component.fetchTrilonArray).toHaveBeenCalled();
       expect(component.players).toEqual([ 'Prizes' ]);
     });
   });
-
-  describe('initializePuzzles', () => {
-    it('should add a random number and compare string to the available puzzles, and then sort them', () => {
-
-      component.initializePuzzles();
-      let randCheck = -1;
-      const comparer = (mappedPuzzle: RandomizedPuzzle) => {
-        const sourcePuzzle = AVAILABLE_PUZZLES.find(p => p.url === mappedPuzzle.url);
-        let comparison = mappedPuzzle.urlRetina === sourcePuzzle?.urlRetina && mappedPuzzle.solution === sourcePuzzle?.solution && mappedPuzzle.explanation === sourcePuzzle?.explanation && mappedPuzzle.compareString === sourcePuzzle?.solution.replace(
-          /\W/gi, '').toLowerCase() && !isNaN(mappedPuzzle.rand) && mappedPuzzle.rand > 0 && mappedPuzzle.rand < 1;
-
-        // need to verify sorting
-        comparison = comparison && mappedPuzzle.rand > randCheck;
-        randCheck = mappedPuzzle.rand;
-        return comparison;
-      };
-      expect(component.puzzleArray.every(comparer)).toBe(true);
+  describe('initTrilonSound', () => {
+    it('should initialize the trilon sound', () => {
+      const expected = new Audio(TRILON_SOUND_SOURCE);
+      component.initTrilonSound();
+      expect(component.trilonSound).toEqual(expected);
+      expect(component.trilonSound.volume).toBe(.24);
     });
   });
 
-  describe('setPuzzle', () => {
-    it('should set the puzzle from the current index', () => {
-      component.puzzleArray = MOCK_RANDOMIZED_PUZZLE_ARRAY;
-      component.puzzleIndex = 2;
-      component.setPuzzle();
-      expect(component.currentPuzzle).toBe(MOCK_RANDOMIZED_PUZZLE_ARRAY[2]);
-    });
-  });
-
-  describe('initializePrizes', () => {
-    type TestCase = [string[], number]
-    const checkPrizeType = (component: ConcentrationComponent, sourceArray: string[]) => {
-      return component.trilonArray
-        .filter((trilonData: TrilonData) => sourceArray.includes(trilonData.prizeName))
-        .length
-    }
-
-    const runContentCategoryTests = (component: ConcentrationComponent, testCases: TestCase[]) => {
-      testCases.forEach( ([sourceArray, expectedCount]: TestCase) => {
-        const actualCount = checkPrizeType(component, sourceArray)
-        expect(actualCount).toBe(expectedCount * 2); // each prize has a match
-      })
-    }
+  describe('playTrilon', () => {
     beforeEach(() => {
-      spyOn(component, 'generatePuzzlePrizes').and.callThrough();
-      spyOn(component, 'setTrilonArray').and.callThrough();
+      component.gameOptions.enableSound = true;
+      spyOn(component.trilonSound, 'play');
     });
-    it('should add a random number and a comparison string to the available prizes (2 handed)', () => {
 
+    it('should play a sound if not stopped, or first time', () => {
+      component.firstPlay = true;
+      component.playTrilon();
+      expect(component.firstPlay).toBe(false);
+      expect(component.trilonSound.play).toHaveBeenCalled();
+    });
+  });
+
+  describe('fetchTrilonArray', () => {
+    it('should call the PuzzleService for the trilon array and call setTrilonArray', fakeAsync(() => {
+      spyOn(puzzleService, 'getTrilonData').and.returnValue(of(MOCK_TRILON_ARRAY.map(td => ({...td}))));
+      spyOn(component, 'setTrilonArray')
       component.singleMode = false;
-      component.initializePrizes();
-      expect(component.generatePuzzlePrizes).toHaveBeenCalledWith(COOL_PRIZES)
-      expect(component.generatePuzzlePrizes).toHaveBeenCalledWith(GAG_PRIZES);
-      expect(component.generatePuzzlePrizes).toHaveBeenCalledWith(UTIL_PRIZES)
-      expect(component.setTrilonArray).toHaveBeenCalled();
-
-
-      const testCases: TestCase[] = [
-        [COOL_PRIZES, 8],
-        [GAG_PRIZES, 2],
-        [UTIL_PRIZES, UTIL_PRIZES.length]
-      ];
-      runContentCategoryTests(component, testCases);
-
-    });
-
-    it('should add a random number and a comparison string to the available prizes (single handed)', () => {
-      component.singleMode = true;
-      component.initializePrizes();
-      expect(component.generatePuzzlePrizes).toHaveBeenCalledWith(COOL_PRIZES)
-      expect(component.generatePuzzlePrizes).toHaveBeenCalledWith(GAG_PRIZES);
-      expect(component.generatePuzzlePrizes).toHaveBeenCalledWith(['Wild'])
-      expect(component.setTrilonArray).toHaveBeenCalled();
-
-      type TestCase = [string[], number]
-      const testCases: TestCase[] = [
-        [COOL_PRIZES, 12],
-        [GAG_PRIZES, 2],
-        [UTIL_PRIZES, 1]
-      ];
-
-      runContentCategoryTests(component, testCases);
-    });
+      component.initialState = 'number';
+      component.fetchTrilonArray();
+      expect(puzzleService.getTrilonData).toHaveBeenCalledWith(component.singleMode, component.initialState)
+    }));
   });
 
   describe('setTrilonArray', () => {
-    it('should map visible number, row and col to the puzzle array, and populate the unmatched array', () => {
-      component.initialState = 'number';
-      const mockPuzzleArray = [
-        {
-          prizeName: 'Prize 1',
-          rand: 0.01
-        }, {
-          prizeName: 'Prize 2',
-          rand: 0.02
-        }, {
-          prizeName: 'Prize 3',
-          rand: 0.03
-        }, {
-          prizeName: 'Prize 4',
-          rand: 0.04
-        }, {
-          prizeName: 'Prize 5',
-          rand: 0.05
-        }, {
-          prizeName: 'Prize 1',
-          rand: 0.06
-        }, {
-          prizeName: 'Prize 2',
-          rand: 0.07
-        }, {
-          prizeName: 'Prize 3',
-          rand: 0.08
-        }, {
-          prizeName: 'Prize 4',
-          rand: 0.09
-        }, {
-          prizeName: 'Prize 5',
-          rand: 0.1
-        }
-      ];
-      const expected: TrilonData[] = [
-        {
-          trilonState: 'number',
-          visibleNumber: 1,
-          prizeName: 'Prize 1',
-          row: 0,
-          col: 0
-        }, {
-          trilonState: 'number',
-          visibleNumber: 2,
-          prizeName: 'Prize 2',
-          row: 0,
-          col: 1
-        }, {
-          trilonState: 'number',
-          visibleNumber: 3,
-          prizeName: 'Prize 3',
-          row: 0,
-          col: 2
-        }, {
-          trilonState: 'number',
-          visibleNumber: 4,
-          prizeName: 'Prize 4',
-          row: 0,
-          col: 3
-        }, {
-          trilonState: 'number',
-          visibleNumber: 5,
-          prizeName: 'Prize 5',
-          row: 0,
-          col: 4
-        }, {
-          trilonState: 'number',
-          visibleNumber: 6,
-          prizeName: 'Prize 1',
-          row: 1,
-          col: 0
-        }, {
-          trilonState: 'number',
-          visibleNumber: 7,
-          prizeName: 'Prize 2',
-          row: 1,
-          col: 1
-        }, {
-          trilonState: 'number',
-          visibleNumber: 8,
-          prizeName: 'Prize 3',
-          row: 1,
-          col: 2
-        }, {
-          trilonState: 'number',
-          visibleNumber: 9,
-          prizeName: 'Prize 4',
-          row: 1,
-          col: 3
-        }, {
-          trilonState: 'number',
-          visibleNumber: 10,
-          prizeName: 'Prize 5',
-          row: 1,
-          col: 4
-        }
-      ];
+    let payload: TrilonData[]
+    beforeEach(() => payload = getFreshTrilonData())
 
-      component.setTrilonArray(mockPuzzleArray);
-      expect(component.trilonArray).toEqual(expected);
-      expect(component.unmatched).toEqual(unmatchedBoard.slice(0, 10));
+    it('should accept the passed trilon data array', () => {
+      component.setTrilonArray(payload);
+      expect(component.trilonArray).toBe(payload);
     });
-  });
-
-  describe('generatePuzzlePrizes', () => {
-    it('should map a string array into array with prizenames and random numbers, and sort them', () => {
-      let randCheck = -1;
-
-      let result: PuzzlePrize[] = component.generatePuzzlePrizes(COOL_PRIZES);
-
-      const comparer = (puzzlePrize: PuzzlePrize) => {
-        const sourcePrizeName = COOL_PRIZES.find(p => p === puzzlePrize.prizeName);
-
-        // need to verify sorting
-        const comparison = !!sourcePrizeName && puzzlePrize.rand > randCheck;
-        randCheck = puzzlePrize.rand;
-        return comparison;
-      };
-      expect(result.every(comparer)).toBe(true);
+    it('should set the unmatched array', () => {
+      component.setTrilonArray(payload);
+      expect(component.clickAllowed).toBe(true);
+      expect(component.unmatched).toEqual(unmatchedBoard);
     });
   });
 
@@ -298,6 +143,7 @@ describe('ConcentrationComponent', () => {
       spyOn(component, 'setMessage');
       spyOn(component, 'hideSolutionForm');
       spyOn(component, 'testForMatch');
+      spyOn(component, 'playTrilon');
     });
     it('should update the trilon state if number, and add it to the tilePair', () => {
       const testTrilon = { ...MOCK_TRILON_ARRAY[1] };
@@ -306,6 +152,7 @@ describe('ConcentrationComponent', () => {
       component.handleTrilonClick(testTrilon);
       expect(testTrilon.trilonState).toBe('prize');
       expect(component.tilePair).toEqual([ testTrilon ]);
+      expect(component.playTrilon).toHaveBeenCalled();
     });
     it('should not update the trilon state if not number', () => {
       const testTrilon = { ...MOCK_TRILON_ARRAY[1] };
@@ -326,8 +173,8 @@ describe('ConcentrationComponent', () => {
     });
     it('should handle the double-wild state', () => {
       component.doubleWildState = true;
-      const wild1 = {...MOCK_TRILON_ARRAY[21]};
-      const wild2 = {...MOCK_TRILON_ARRAY[25]}
+      const wild1 = { ...MOCK_TRILON_ARRAY[21] };
+      const wild2 = { ...MOCK_TRILON_ARRAY[25] };
       const testTrilon = { ...MOCK_TRILON_ARRAY[1] };
       const firstNumber = { ...MOCK_TRILON_ARRAY[10] };
       component.tilePair = [ wild1, wild2, firstNumber ];
@@ -415,11 +262,13 @@ describe('ConcentrationComponent', () => {
         addPrize: jasmine.createSpy('addPrize')
       } as any;
       spyOn(component, 'setMessage');
+      spyOn(component, 'playTrilon');
+      component.trilonArray = getFreshTrilonData();
       component.unmatched = [ ...unmatchedBoard ];
     });
-    it('should determine the prize name, add the prize, and show the solution form', () => {
+    it('should determine the prize name, add the prize, and show the solution form', fakeAsync(() => {
       spyOn(component, 'showSolutionForm');
-      component.tilePair = [ { ...MOCK_TRILON_ARRAY[0] }, { ...MOCK_TRILON_ARRAY[3] } ];
+      component.tilePair = [ component.trilonArray[0], component.trilonArray[3] ];
       component.actOnMatch(true);
 
       const expectedUnmatched = unmatchedBoard.filter(n => ![ 1, 4 ].includes(n));
@@ -427,7 +276,13 @@ describe('ConcentrationComponent', () => {
       expect(component.scoreboardComponent.addPrize).toHaveBeenCalledWith('Snowblower');
       expect(component.showSolutionForm).toHaveBeenCalled();
 
-    });
+      tick(COMPARISON_INTERVAL);
+      expect(component.tilePair).toEqual([]);
+      expect(component.trilonArray[0].trilonState).toBe('puzzle');
+      expect(component.trilonArray[3].trilonState).toBe('puzzle');
+      expect(component.playTrilon).toHaveBeenCalled();
+
+    }));
     it('should determine the prize name if the first number was the wild card', () => {
       component.tilePair = [ { ...MOCK_TRILON_ARRAY[21] }, { ...MOCK_TRILON_ARRAY[3] } ];
       component.actOnMatch(true);
@@ -439,23 +294,28 @@ describe('ConcentrationComponent', () => {
       expect(component.doubleWildState).toBe(true);
       expect(component.setMessage).toHaveBeenCalledWith('Congratulations! Pick two more prizes.');
     });
-    it('should switch players and message (2 handed) when not a match', () => {
+    it('should switch players and message (2 handed) when not a match', fakeAsync(() => {
       spyOn(component, 'switchPlayers').and.callThrough();
       component.players = [ 'Scott', 'Marty' ];
       component.activeIndex = 0;
-      component.tilePair = [ { ...MOCK_TRILON_ARRAY[0] }, { ...MOCK_TRILON_ARRAY[29] } ];
+      component.tilePair = [ component.trilonArray[0], component.trilonArray[29] ];
       component.singleMode = false;
       component.actOnMatch(false);
       expect(component.switchPlayers).toHaveBeenCalled();
       expect(component.setMessage).toHaveBeenCalledWith('Marty, your turn.', true);
 
-    });
+      tick(COMPARISON_INTERVAL);
+      expect(component.tilePair).toEqual([]);
+      expect(component.trilonArray[0].trilonState).toBe('number');
+      expect(component.trilonArray[3].trilonState).toBe('number');
+      expect(component.playTrilon).toHaveBeenCalled();
+
+    }));
     it('should switch players and message (single handed) when not a match', () => {
       component.tilePair = [ { ...MOCK_TRILON_ARRAY[0] }, { ...MOCK_TRILON_ARRAY[29] } ];
       component.singleMode = true;
       component.actOnMatch(false);
       expect(component.setMessage).toHaveBeenCalledWith('Try Again', true);
-
     });
   });
 
@@ -532,11 +392,13 @@ describe('ConcentrationComponent', () => {
 
   describe('setBoardState', () => {
     const states: TrilonState[] = [ 'number', 'prize', 'puzzle' ];
+    beforeEach(() => spyOn(component, 'playTrilon'));
     states.forEach((state: TrilonState) => {
       it(`should set every trilon to a trilon state of '${state}' when passed '${state}'`, () => {
         component.setBoardState(state);
         const expected = component.trilonArray.every(trilonData => trilonData.trilonState === state);
         expect(expected).toBe(true);
+        expect(component.playTrilon).toHaveBeenCalled();
       });
     });
 
@@ -616,8 +478,10 @@ describe('ConcentrationComponent', () => {
   });
 
   describe('noMoreMatches', () => {
+    beforeEach(() => spyOn(component, 'playTrilon'));
     it('should turn off clicking and show the puzzle', () => {
       spyOn(component, 'setBoardState');
+
       component.noMoreMatches();
       expect(component.setBoardState).toHaveBeenCalledWith('puzzle');
       expect(component.clickAllowed).toBe(false);
@@ -677,13 +541,15 @@ describe('ConcentrationComponent', () => {
     beforeEach(() => {
       spyOn(component, 'setMessage');
       spyOn(component, 'setBoardState');
+      spyOn(component, 'setTrilonArray');
+      spyOn(puzzleService, 'getPuzzle').and.returnValue(of({ ...MOCK_RANDOMIZED_PUZZLE_ARRAY[1] }));
+      spyOn(puzzleService, 'getTrilonData').and.returnValue(of({ ...MOCK_TRILON_ARRAY }));
       component.scoreboardComponent = {
         clearPrizes: jasmine.createSpy('clearPrizes')
       } as any;
     });
 
-    it('should set flags to start over', () => {
-      component.puzzleIndex = 1;
+    it('should set flags to start over', fakeAsync(() => {
       component.playAgain();
 
       expect(component.showExplanation).toBe(false);
@@ -695,22 +561,31 @@ describe('ConcentrationComponent', () => {
       expect(component.showPlayAgain).toBe(false);
       expect(component.showEndGame).toBe(true);
       expect(component.scoreboardComponent.clearPrizes).toHaveBeenCalledWith(true);
-      expect(component.puzzleIndex).toBe(2);
-    });
-    it('should start over if all puzzles have been played', () => {
-      component.puzzleIndex = component.puzzleArray.length - 1;
-      component.playAgain();
-      expect(component.puzzleIndex).toBe(0);
-    });
-    it('should set the puzzle and reinitialize after a delay', fakeAsync(() => {
-      spyOn(component, 'setPuzzle');
-      spyOn(component, 'initializePrizes');
-      component.playAgain();
-      tick(1600);
-
-      expect(component.setPuzzle).toHaveBeenCalled();
-      expect(component.initializePrizes).toHaveBeenCalled();
+      tick(PLAY_AGAIN_DELAY);
+      expect(component.currentPuzzle).toEqual(MOCK_RANDOMIZED_PUZZLE_ARRAY[1]);
+      expect(component.setTrilonArray).toHaveBeenCalled();
     }));
+  });
+
+  describe('acceptGameOptions', () => {
+    it('should accept the game options emitted by the game option component', () => {
+      component.trilonSound = {
+        src: TRILON_SOUND_SOURCE,
+        volume: .24
+      } as any as HTMLAudioElement;
+      component.gameOptions = DEFAULT_GAME_OPTIONS;
+
+      const newOptions = {
+        enableSound: true,
+        volume: .50,
+        narzAppearance: true,
+        blumenthalPuzzles: false
+      };
+
+      component.acceptGameOptions(newOptions);
+      expect(component.gameOptions).toBe(newOptions);
+      expect(component.trilonSound.volume).toBe(newOptions.volume);
+    });
   });
 
 });
