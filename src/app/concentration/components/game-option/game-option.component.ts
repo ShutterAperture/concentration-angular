@@ -22,8 +22,6 @@ import { LocalStorageService } from '../../services/local-storage.service';
   ]
 })
 export class GameOptionComponent implements OnInit, OnDestroy {
-
-
   gameOptions!: GameOptions
   @Output() optionChanged: EventEmitter<GameOptions> = new EventEmitter<GameOptions>()
 

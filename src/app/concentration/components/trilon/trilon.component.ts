@@ -14,7 +14,6 @@ export class TrilonComponent implements OnChanges {
   @Input() trilonData!: TrilonData
   @Input() puzzleUrl!: string;
   @Input() puzzleUrlHiRes?: string;
-  @Input() narzAppearance = false;
   prizeType: 'transfer' | 'wild' | 'prize' = 'prize'
   puzzleStyleObject!: StyleObject;
 

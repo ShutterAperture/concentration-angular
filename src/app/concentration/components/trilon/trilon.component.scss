@@ -29,7 +29,6 @@ $narz-transition: 1s;
   }
 }
 
-
 .trilon {
   $transform-transition: .8s;
   position: absolute;
@@ -41,7 +40,6 @@ $narz-transition: 1s;
   -webkit-transition: -webkit-transform $transform-transition;
   transform: translateZ(-28.9px);
   -webkit-transform: translateZ(-28.9px);
-
 
   &.state-prize {
     transform: translateZ(-28.9px) rotateY(-120deg);
@@ -77,7 +75,9 @@ $narz-transition: 1s;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
   }
-}// end, trilon
+}
+
+// end, trilon
 
 .num {
   background: #DEBE4E;
@@ -94,7 +94,6 @@ $narz-transition: 1s;
     color: #FFF;
     transition: all $narz-transition;
   }
-
 
 }
 
@@ -137,7 +136,6 @@ $narz-transition: 1s;
   filter: grayscale(0) invert(0);
   transition: $narz-transition;
 }
-
 
 @media only screen and (max-width: 600px) {
   .trilon {

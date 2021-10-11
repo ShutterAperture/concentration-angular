@@ -56,7 +56,6 @@ describe('PuzzleService', () => {
 
   describe('advanceToNextPuzzle', () => {
     beforeEach(() => service.puzzleArray = [ ...MOCK_RANDOMIZED_PUZZLE_ARRAY ]);
-
     it('should increment the puzzle index', () => {
       service.puzzleIndex = 1;
       service.advanceToNextPuzzle();
@@ -92,7 +91,6 @@ describe('PuzzleService', () => {
   describe('generatePuzzlePrizes', () => {
     it('should map a string array into array with prizenames and random numbers, and sort them', () => {
       let randCheck = -1;
-
       let result: PuzzlePrize[] = service.generatePuzzlePrizes(COOL_PRIZES);
 
       const comparer = (puzzlePrize: PuzzlePrize) => {
@@ -135,7 +133,6 @@ describe('PuzzleService', () => {
         [ COOL_PRIZES, 7 ], [ GAG_PRIZES, 3 ], [ UTIL_PRIZES, UTIL_PRIZES.length ]
       ];
       runContentCategoryTests(result, testCases);
-
     });
 
     it('should add a random number and a comparison string to the available prizes (single handed)', () => {
@@ -176,7 +173,6 @@ describe('PuzzleService', () => {
         }
       ];
 
-
       const actualOutput = service.createMatchForEachPrize(input);
 
       let randCheck = -1;
@@ -190,6 +186,7 @@ describe('PuzzleService', () => {
         return comparison;
       };
       expect(actualOutput.every(comparer)).toBe(true);
+      expect(actualOutput.length).toBe(input.length * 2);
     });
   });
 
