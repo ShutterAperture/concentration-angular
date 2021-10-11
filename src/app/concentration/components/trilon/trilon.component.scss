@@ -1,14 +1,45 @@
+$narz-transition: 1s;
+:host {
+  &.narz {
+    .trilon .num {
+      background: #AA4612;
+
+      .inner {
+        margin: 9px 12px;
+        height: 45px;
+        background: #FECD65;
+        font-size: 2.6em;
+        line-height: 1.1;
+        color: #AF5400;
+
+        @media only screen and (max-width: 600px) {
+          margin: 4px 5px;
+          height: 31px;
+          font-size: 1.9em;
+          line-height: 1;
+        }
+      }
+    }
+  }
+
+  &.blumenthal {
+    .pzl {
+      filter: grayscale(1) invert(1);
+    }
+  }
+}
+
 .trilon {
+  $transform-transition: .8s;
   position: absolute;
   width: 98px;
   height: 63px;
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
-  transition: transform 1s;
-  -webkit-transition: -webkit-transform 1s;
+  transition: transform $transform-transition;
+  -webkit-transition: -webkit-transform $transform-transition;
   transform: translateZ(-28.9px);
   -webkit-transform: translateZ(-28.9px);
-
 
   &.state-prize {
     transform: translateZ(-28.9px) rotateY(-120deg);
@@ -20,48 +51,18 @@
     -webkit-transform: translateZ(-28.9px) rotateY(-240deg);
   }
 
-  &.row0 {
-    top: 1px
+  // vertical placement
+  @for $i from 0 through 5 {
+    &.row#{$i} {
+      top: 1px + ($i * 65px);
+    }
   }
 
-  &.row1 {
-    top: 66px
-  }
-
-  &.row2 {
-    top: 131px
-  }
-
-  &.row3 {
-    top: 196px
-  }
-
-  &.row4 {
-    top: 261px
-  }
-
-  &.row5 {
-    top: 326px
-  }
-
-  &.col0 {
-    left: 1px
-  }
-
-  &.col1 {
-    left: 101px
-  }
-
-  &.col2 {
-    left: 201px
-  }
-
-  &.col3 {
-    left: 301px
-  }
-
-  &.col4 {
-    left: 401px
+  // horizontal placement
+  @for $i from 0 through 4 {
+    &.col#{$i} {
+      left: 1px + ($i * 100px);
+    }
   }
 
   .face {
@@ -74,12 +75,15 @@
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
   }
-}// end, trilon
+}
+
+// end, trilon
 
 .num {
   background: #DEBE4E;
   transform: translateZ(28.9px);;
   -webkit-transform: translateZ(28.9px);
+  transition: background-color $narz-transition;
 
   .inner {
     margin: 12px 16px;
@@ -88,7 +92,9 @@
     line-height: 1.4;
     background: #A3211B;
     color: #FFF;
+    transition: all $narz-transition;
   }
+
 }
 
 .prize {
@@ -127,56 +133,27 @@
   color: #000;
   transform: rotateY(-120deg) translateZ(28.9px);
   -webkit-transform: rotateY(-120deg) translateZ(28.9px);
+  filter: grayscale(0) invert(0);
+  transition: $narz-transition;
 }
-
 
 @media only screen and (max-width: 600px) {
   .trilon {
     width: 60px;
     height: 39px;
 
-    &.row0 {
-      top: 1px
+    // vertical placement
+    @for $i from 0 through 5 {
+      &.row#{$i} {
+        top: 1px + ($i * 41px);
+      }
     }
 
-    &.row1 {
-      top: 42px
-    }
-
-    &.row2 {
-      top: 83px
-    }
-
-    &.row3 {
-      top: 124px;
-    }
-
-    &.row4 {
-      top: 165px
-    }
-
-    &.row5 {
-      top: 206px
-    }
-
-    &.col0 {
-      left: 1px
-    }
-
-    &.col1 {
-      left: 63px
-    }
-
-    &.col2 {
-      left: 125px
-    }
-
-    &.col3 {
-      left: 187px
-    }
-
-    &.col4 {
-      left: 249px
+    // horizontal placement
+    @for $i from 0 through 4 {
+      &.col#{$i} {
+        left: 1px + ($i * 62px);
+      }
     }
   }
 
@@ -190,8 +167,6 @@
   }
 
   .prize {
-
-
     .inner {
       font-size: .65em;
       letter-spacing: -.05em;

@@ -52,3 +52,10 @@ export interface PlayerData {
   singleMode: boolean;
   players: string[];
 }
+
+export interface GameOptions {
+  enableSound: boolean;
+  volume: number;
+  narzAppearance: boolean;
+  blumenthalPuzzles: boolean
+}

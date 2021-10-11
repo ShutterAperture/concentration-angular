@@ -48,6 +48,12 @@
   height: 390px;
   box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
   padding: 15px;
+
+  ca-game-option {
+    position: absolute;
+    left: 0;
+    top: -30px;
+  }
 }
 
 #board {
@@ -132,7 +138,6 @@ button {
   #gameboard {
     width: 310px;
     height: 246px;
-    overflow: hidden;
     padding: 8px;
   }
 
