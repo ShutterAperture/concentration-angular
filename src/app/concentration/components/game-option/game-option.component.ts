@@ -26,6 +26,7 @@ export class GameOptionComponent implements OnInit, OnDestroy {
   @Output() optionChanged: EventEmitter<GameOptions> = new EventEmitter<GameOptions>()
 
   @HostListener('window:click', ['$event'])
+  @HostListener('window:touchstart', ['$event'])
   hideOnClick(event: Event) {
     if(this.showMenu && !this.element.nativeElement.contains(event.target)) {
       this.toggleMenu(event, false)
