@@ -49,6 +49,12 @@ export const AVAILABLE_PUZZLES: Puzzle[] = [
     urlRetina: 'pzzl-007-2x.gif',
     explanation: 'Head + Ham + Pen + ed  1 + N + Eye + T',
     solution: 'It happened one night'
+  },
+  {
+    url: 'pzzl-008.gif',
+    urlRetina: 'pzzl-008-2x.gif',
+    explanation: 'Saw + M Hen + CH + Hand + Ed EVE + hen + ING',
+    solution: 'Some enchanted evening'
   }
 ];
 
