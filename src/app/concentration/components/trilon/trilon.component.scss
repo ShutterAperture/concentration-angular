@@ -2,15 +2,15 @@ $narz-transition: 1s;
 :host {
   &.narz {
     .trilon .num {
-      background: #AA4612;
+      background: #8d160f;
 
       .inner {
         margin: 9px 12px;
         height: 45px;
-        background: #FECD65;
+        background: #f6c257;
         font-size: 2.6em;
         line-height: 1.1;
-        color: #AF5400;
+        color: #944500;
 
         @media only screen and (max-width: 600px) {
           margin: 4px 5px;
