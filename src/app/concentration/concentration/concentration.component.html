@@ -14,6 +14,7 @@
       <div id="game-area">
         <div id="gameboard">
           <ca-game-option (optionChanged)="acceptGameOptions($event)"></ca-game-option>
+          <!-- test commit -->
           <div id="board">
             <ca-trilon *ngFor="let trilon of trilonArray; index as i" [trilonData]="trilon"
                        [puzzleUrl]="currentPuzzle.url" (click)="handleTrilonClick(trilon)"
