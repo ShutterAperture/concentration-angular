@@ -265,6 +265,7 @@ export class ConcentrationComponent implements OnInit {
 
   revealBoard(clearBoth: boolean) {
     this.setBoardState('puzzle');
+    this.puzzleService.appendViewedPuzzle(this.currentPuzzle.url);
     if (clearBoth) {
       this.scoreboardComponent.clearPrizes(clearBoth);
     }

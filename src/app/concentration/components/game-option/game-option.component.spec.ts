@@ -1,6 +1,7 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { DEFAULT_GAME_OPTIONS } from '../../constants';
 import { LocalStorageService } from '../../services/local-storage.service';
+import { MOCK_LOCAL_STORAGE_FACTORY, MockStorage } from '../../services/mockLocalStorageService-factory';
 
 import { GameOptionComponent } from './game-option.component';
 
@@ -8,18 +9,8 @@ describe('GameOptionComponent', () => {
   let component: GameOptionComponent;
   let fixture: ComponentFixture<GameOptionComponent>;
 
-  const mockStorage: {[keyname: string]: string|undefined} = {};
-
-  const mockLocalStorageService = {
-    getItem: jasmine.createSpy('getItem').and.callFake((keyName: string) => mockStorage[keyName] ?? null),
-    setItem: jasmine.createSpy('setItem').and.callFake((keyName: string, data:string) => mockStorage[keyName] = data),
-    getObject: jasmine.createSpy('getObject').and.callFake((keyName: string) => {
-      const data = mockStorage[keyName];
-      if(!!data) { return JSON.parse(data)}
-      else {return null}
-    }),
-    setObject: jasmine.createSpy('setObject').and.callFake((keyName: string, data:any) => mockStorage[keyName] = JSON.stringify(data))
-  }
+  const mockStorage: MockStorage = {};
+  const mockLocalStorageService = MOCK_LOCAL_STORAGE_FACTORY(mockStorage)
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

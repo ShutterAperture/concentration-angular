@@ -22,7 +22,7 @@ export interface PuzzlePrize {
   rand: number;
 }
 
-// Data object for each trilon (rotating puzzle piece. Row and column are important for positioning
+// Data object for each trilon (rotating puzzle piece). Row and column are important for positioning
 export interface TrilonData  {
   visibleNumber: number;
   trilonState: TrilonState;
@@ -37,6 +37,7 @@ export interface Puzzle {
   urlRetina?: string;
   solution: string;
   explanation: string;
+  author: string;
 }
 
 /* Compare string is the solution stripped of punctuation and white space,
@@ -44,10 +45,11 @@ export interface Puzzle {
 export interface RandomizedPuzzle extends Puzzle {
   rand: number;
   compareString: string;
+  viewed: boolean
 }
 
 /* Data coming out of the entry form, comprised of the single mode flag, and the
-  names of the players, if two handed.  */
+  names of the players, if two-handed.  */
 export interface PlayerData {
   singleMode: boolean;
   players: string[];
