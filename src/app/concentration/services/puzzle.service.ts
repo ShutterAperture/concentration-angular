@@ -1,10 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { AVAILABLE_PUZZLES, COOL_PRIZES, GAG_PRIZES, NUM_COLS, UTIL_PRIZES } from '../constants';
+import { AVAILABLE_PUZZLES, COOL_PRIZES, GAG_PRIZES, NUM_COLS, UTIL_PRIZES, VIEWED_PUZZLES_KEY } from '../constants';
 import { PuzzlePrize, RandomizedPuzzle, TrilonData } from '../interfaces';
 import { TrilonState } from '../types';
+import { LocalStorageService } from './local-storage.service';
 
-const prizeSorter = (a: PuzzlePrize | RandomizedPuzzle, b: PuzzlePrize | RandomizedPuzzle) => a.rand - b.rand;
+const prizeSorter = (a: PuzzlePrize, b: PuzzlePrize) => a.rand - b.rand;
+const puzzleSorter = (a: RandomizedPuzzle, b: RandomizedPuzzle) => {
+  if (a.viewed !== b.viewed) {
+    return a.viewed ? 1 : -1;
+  }
+  return a.rand - b.rand;
+};
 
 @Injectable({
   providedIn: 'root'
@@ -14,18 +21,28 @@ export class PuzzleService {
   puzzleArray: RandomizedPuzzle[] = [];
   puzzleIndex = 0;
 
-  constructor() { this.initializePuzzles()}
+  viewedPuzzleUrls: string[] = [];
+
+  constructor(private localStorageService: LocalStorageService) {
+    this.initializePuzzles();
+  }
 
   initializePuzzles() {
+    this.getViewedPuzzles();
     this.puzzleArray = AVAILABLE_PUZZLES.map(puzzle => ({
       ...puzzle,
       rand: Math.random(),
-      compareString: puzzle.solution.replace(/\W/gi, '').toLowerCase()
-    })).sort(prizeSorter);
+      compareString: puzzle.solution.replace(/\W/gi, '').toLowerCase(),
+      viewed: this.viewedPuzzleUrls.includes(puzzle.url)
+    })).sort(puzzleSorter);
   }
 
   getPuzzle(): Observable<RandomizedPuzzle> {
-    return of(this.puzzleArray[this.puzzleIndex])
+    return of(this.puzzleArray[this.puzzleIndex]);
+  }
+
+  getViewedPuzzles() {
+    this.viewedPuzzleUrls = this.localStorageService.getObject<string[]>(VIEWED_PUZZLES_KEY) ?? [];
   }
 
   advanceToNextPuzzle() {
@@ -36,7 +53,7 @@ export class PuzzleService {
   getTrilonData(isSingle: Boolean, initialState: TrilonState = 'number'): Observable<TrilonData[]> {
     const prizeSet = this.createPrizeSet(isSingle);
     const prizesWithMatches = this.createMatchForEachPrize(prizeSet);
-    return of(this.mapToTrilonData(prizesWithMatches, initialState))
+    return of(this.mapToTrilonData(prizesWithMatches, initialState));
   }
 
   generatePuzzlePrizes(prizeArray: string[]): PuzzlePrize[] {
@@ -65,10 +82,10 @@ export class PuzzleService {
     let prizeSet = [ ...utilPrizes ];
     prizeSet = [ ...prizeSet, ...coolPrizes.slice(0, goodPrizeCount) ]; // pick off the first 10 or 12 cool prizes
     prizeSet = [ ...prizeSet, ...gagPrizes.slice(0, gagPrizeCount) ]; // pick off the first 2 gag prizes
-    return prizeSet
+    return prizeSet;
   }
 
-  createMatchForEachPrize(prizeSet: PuzzlePrize[]): PuzzlePrize[]{
+  createMatchForEachPrize(prizeSet: PuzzlePrize[]): PuzzlePrize[] {
     let intermediateArray: PuzzlePrize[] = [];
     prizeSet.forEach(rawPrize => {
       intermediateArray = [
@@ -97,6 +114,13 @@ export class PuzzleService {
         col: visibleNumber % NUM_COLS ? index % NUM_COLS : NUM_COLS - 1
       };
     });
+  }
+
+  appendViewedPuzzle(puzzleUrl: string) {
+    if (!this.viewedPuzzleUrls.includes(puzzleUrl)) {
+      this.viewedPuzzleUrls = [ ...this.viewedPuzzleUrls, puzzleUrl ];
+      this.localStorageService.setObject(VIEWED_PUZZLES_KEY, this.viewedPuzzleUrls);
+    }
   }
 }
 

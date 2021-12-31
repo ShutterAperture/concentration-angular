@@ -1,18 +1,26 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MOCK_RANDOMIZED_PUZZLE_ARRAY } from '../../../mocks/randomized-puzzle-array-mock';
-import { AVAILABLE_PUZZLES, COOL_PRIZES, GAG_PRIZES, UTIL_PRIZES } from '../constants';
+import { AVAILABLE_PUZZLES, COOL_PRIZES, GAG_PRIZES, UTIL_PRIZES, VIEWED_PUZZLES_KEY } from '../constants';
 import { PuzzlePrize, RandomizedPuzzle, TrilonData } from '../interfaces';
+import { LocalStorageService } from './local-storage.service';
+import { MOCK_LOCAL_STORAGE_FACTORY, MockStorage } from './mockLocalStorageService-factory';
 
 import { PuzzleService } from './puzzle.service';
 
 describe('PuzzleService', () => {
   let service: PuzzleService;
 
+  const mockStorage: MockStorage = {};
+  const mockLocalStorageService = MOCK_LOCAL_STORAGE_FACTORY(mockStorage)
+
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ PuzzleService ]
+      providers: [
+        PuzzleService,
+        {provide: LocalStorageService, useValue: mockLocalStorageService} ]
     });
     service = TestBed.inject(PuzzleService);
+    mockStorage[VIEWED_PUZZLES_KEY] = undefined
   });
 
   it('should be created', () => {
@@ -20,21 +28,27 @@ describe('PuzzleService', () => {
   });
 
   describe('initializePuzzles', () => {
+    const viewedPuzzleUrl = AVAILABLE_PUZZLES[1].url;
+    beforeEach(() => mockStorage[VIEWED_PUZZLES_KEY] = `["${viewedPuzzleUrl}"]`)
     it('should add a random number and compare string to the available puzzles, and then sort them', () => {
-
+      spyOn(service, 'getViewedPuzzles').and.callThrough();
       service.initializePuzzles();
       let randCheck = -1;
+      let lastViewed = false;
       const comparer = (mappedPuzzle: RandomizedPuzzle) => {
         const sourcePuzzle = AVAILABLE_PUZZLES.find(p => p.url === mappedPuzzle.url);
         let comparison = mappedPuzzle.urlRetina === sourcePuzzle?.urlRetina && mappedPuzzle.solution === sourcePuzzle?.solution && mappedPuzzle.explanation === sourcePuzzle?.explanation && mappedPuzzle.compareString === sourcePuzzle?.solution.replace(
           /\W/gi, '').toLowerCase() && !isNaN(mappedPuzzle.rand) && mappedPuzzle.rand > 0 && mappedPuzzle.rand < 1;
 
         // need to verify sorting
-        comparison = comparison && mappedPuzzle.rand > randCheck;
+        comparison = comparison && mappedPuzzle.rand > randCheck || mappedPuzzle.viewed !== lastViewed;
         randCheck = mappedPuzzle.rand;
+        lastViewed = mappedPuzzle.viewed
         return comparison;
       };
       expect(service.puzzleArray.every(comparer)).toBe(true);
+      expect(service.puzzleArray.every((pzl) => pzl.viewed === (pzl.url === viewedPuzzleUrl))).toBe(true);
+      expect(service.getViewedPuzzles).toHaveBeenCalled();
     });
   });
 
@@ -53,6 +67,19 @@ describe('PuzzleService', () => {
 
     }));
   });
+
+  describe('getViewedPuzzles', () => {
+    const viewedPuzzleUrl = AVAILABLE_PUZZLES[1].url;
+
+    it('should set viewedPuzzleUrls to the value of the saved puzzle urls', () => {
+      service.getViewedPuzzles();
+      expect(service.viewedPuzzleUrls).toEqual([]);
+
+      mockStorage[VIEWED_PUZZLES_KEY] = `["${viewedPuzzleUrl}"]`
+      service.getViewedPuzzles();
+      expect(service.viewedPuzzleUrls).toEqual([viewedPuzzleUrl]);
+    })
+  })
 
   describe('advanceToNextPuzzle', () => {
     beforeEach(() => service.puzzleArray = [ ...MOCK_RANDOMIZED_PUZZLE_ARRAY ]);
@@ -296,4 +323,20 @@ describe('PuzzleService', () => {
       expect(result).toEqual(expected);
     });
   });
+
+  describe('appendViewedPuzzle', () => {
+    beforeEach(mockLocalStorageService.setObject.calls.reset)
+    it('should append a puzzle url when it is not present in the viewedPuzzleUrls', () => {
+      service.viewedPuzzleUrls = ['pzzl-001.gif'];
+      service.appendViewedPuzzle('pzzl-002.gif');
+      expect(service.viewedPuzzleUrls).toEqual(['pzzl-001.gif', 'pzzl-002.gif']);
+      expect(mockLocalStorageService.setObject).toHaveBeenCalledWith(VIEWED_PUZZLES_KEY, service.viewedPuzzleUrls)
+    })
+    it('should not append a puzzle url when it is not present in the viewedPuzzleUrls', () => {
+      service.viewedPuzzleUrls = ['pzzl-001.gif', 'pzzl-002.gif'];
+      service.appendViewedPuzzle('pzzl-002.gif');
+      expect(service.viewedPuzzleUrls).toEqual(['pzzl-001.gif', 'pzzl-002.gif']);
+      expect(mockLocalStorageService.setObject).not.toHaveBeenCalled()
+    })
+  })
 });

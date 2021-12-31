@@ -5,8 +5,10 @@ import { of } from 'rxjs';
 import { MOCK_RANDOMIZED_PUZZLE_ARRAY } from '../../../mocks/randomized-puzzle-array-mock';
 import { MOCK_TRILON_ARRAY } from '../../../mocks/trilon-array-mock';
 import { ScoreboardComponent } from '../components/scoreboard/scoreboard.component';
-import { COMPARISON_INTERVAL, DEFAULT_GAME_OPTIONS, MESSAGE_DELAY, PLAY_AGAIN_DELAY, TRILON_SOUND_SOURCE } from '../constants';
-import { TrilonData } from '../interfaces';
+import {
+  AVAILABLE_PUZZLES, COMPARISON_INTERVAL, DEFAULT_GAME_OPTIONS, MESSAGE_DELAY, PLAY_AGAIN_DELAY, TRILON_SOUND_SOURCE
+} from '../constants';
+import { RandomizedPuzzle, TrilonData } from '../interfaces';
 import { PuzzleService } from '../services/puzzle.service';
 import { TrilonState } from '../types';
 
@@ -15,7 +17,21 @@ import { ConcentrationComponent } from './concentration.component';
 const unmatchedBoard: number[] = [];
 for (let i = 1; i <= 30; i++) {unmatchedBoard.push(i);}
 
-const getFreshTrilonData = () => MOCK_TRILON_ARRAY.map(td => ({...td}))
+const getFreshTrilonData = () => MOCK_TRILON_ARRAY.map(td => ({ ...td }));
+
+const mockRandomizedPuzzle: RandomizedPuzzle = {
+  ...AVAILABLE_PUZZLES[0],
+  rand: 0.5,
+  viewed: true,
+  compareString: AVAILABLE_PUZZLES[0].solution.replace(/\W/gi, '').toLowerCase()
+};
+
+const mockPuzzleService = {
+  getPuzzle: jasmine.createSpy('getPuzzle').and.returnValue(of(mockRandomizedPuzzle)),
+  getTrilonData: jasmine.createSpy('getTrilonData'),
+  appendViewedPuzzle: jasmine.createSpy('appendViewedPuzzle'),
+  advanceToNextPuzzle: jasmine.createSpy('advanceToNextPuzzle')
+};
 
 describe('ConcentrationComponent', () => {
   let component: ConcentrationComponent;
@@ -24,7 +40,12 @@ describe('ConcentrationComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
         imports: [ NoopAnimationsModule ],
-        providers: [ PuzzleService ],
+        providers: [
+          {
+            provide: PuzzleService,
+            useValue: mockPuzzleService
+          }
+        ],
         declarations: [ ConcentrationComponent, ScoreboardComponent ],
         schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
       })
@@ -46,7 +67,6 @@ describe('ConcentrationComponent', () => {
 
   describe('ngOnInit', () => {
     it('should set up the puzzles ', () => {
-      spyOn(puzzleService, 'getPuzzle').and.callThrough();
       spyOn(component, 'initTrilonSound');
 
       component.ngOnInit();
@@ -109,18 +129,19 @@ describe('ConcentrationComponent', () => {
 
   describe('fetchTrilonArray', () => {
     it('should call the PuzzleService for the trilon array and call setTrilonArray', fakeAsync(() => {
-      spyOn(puzzleService, 'getTrilonData').and.returnValue(of(MOCK_TRILON_ARRAY.map(td => ({...td}))));
-      spyOn(component, 'setTrilonArray')
+
+      mockPuzzleService.getTrilonData.and.returnValue(of(MOCK_TRILON_ARRAY.map(td => ({ ...td }))));
+      spyOn(component, 'setTrilonArray');
       component.singleMode = false;
       component.initialState = 'number';
       component.fetchTrilonArray();
-      expect(puzzleService.getTrilonData).toHaveBeenCalledWith(component.singleMode, component.initialState)
+      expect(puzzleService.getTrilonData).toHaveBeenCalledWith(component.singleMode, component.initialState);
     }));
   });
 
   describe('setTrilonArray', () => {
-    let payload: TrilonData[]
-    beforeEach(() => payload = getFreshTrilonData())
+    let payload: TrilonData[];
+    beforeEach(() => payload = getFreshTrilonData());
 
     it('should accept the passed trilon data array', () => {
       component.setTrilonArray(payload);
@@ -422,6 +443,10 @@ describe('ConcentrationComponent', () => {
       expect(component.showPlayAgain).toBe(true);
       expect(component.showEndGame).toBe(false);
     });
+    it('should record that the current puzzle has been viewed', () => {
+      component.revealBoard(false);
+      expect(mockPuzzleService.appendViewedPuzzle).toHaveBeenCalledWith(component.currentPuzzle.url);
+    });
     it('should call scoreboard clear prizes if passed true, in single mode', () => {
       component.singleMode = true;
       component.revealBoard(true);
@@ -542,8 +567,8 @@ describe('ConcentrationComponent', () => {
       spyOn(component, 'setMessage');
       spyOn(component, 'setBoardState');
       spyOn(component, 'setTrilonArray');
-      spyOn(puzzleService, 'getPuzzle').and.returnValue(of({ ...MOCK_RANDOMIZED_PUZZLE_ARRAY[1] }));
-      spyOn(puzzleService, 'getTrilonData').and.returnValue(of({ ...MOCK_TRILON_ARRAY }));
+      mockPuzzleService.getPuzzle.and.returnValue(of({ ...MOCK_RANDOMIZED_PUZZLE_ARRAY[1] }));
+      mockPuzzleService.getTrilonData.and.returnValue(of({ ...MOCK_TRILON_ARRAY }));
       component.scoreboardComponent = {
         clearPrizes: jasmine.createSpy('clearPrizes')
       } as any;
