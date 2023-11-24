@@ -17,6 +17,7 @@
           <div id="board">
             <ca-trilon *ngFor="let trilon of trilonArray; index as i" [trilonData]="trilon"
                        [puzzleUrl]="currentPuzzle.url" (click)="handleTrilonClick(trilon)"
+                       [resizeMarker]=resizeMarker
                        [ngClass]="{narz: gameOptions?.narzAppearance, blumenthal: gameOptions?.blumenthalPuzzles}"
                        [puzzleUrlHiRes]="currentPuzzle.urlRetina"></ca-trilon>
           </div>

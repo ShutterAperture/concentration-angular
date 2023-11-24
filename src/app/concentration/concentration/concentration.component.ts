@@ -1,6 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { fromEvent } from 'rxjs';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { debounceTime, fromEvent, Subject, takeUntil } from 'rxjs';
 import { delay, mergeMap, take, tap } from 'rxjs/operators';
 import { ScoreboardComponent } from '../components/scoreboard/scoreboard.component';
 import { COMPARISON_INTERVAL, DEFAULT_GAME_OPTIONS, MESSAGE_DELAY, PLAY_AGAIN_DELAY, TRILON_SOUND_SOURCE } from '../constants';
@@ -14,7 +14,6 @@ import { TrilonState } from '../types';
   styleUrls: [ './concentration.component.scss' ],
   animations: [
     // animation triggers go here
-
     trigger('insertRemoveTrigger', [
       transition(':enter', [
         style({ opacity: 0 }), animate('500ms 500ms', style({ opacity: 1 }))
@@ -24,12 +23,12 @@ import { TrilonState } from '../types';
     ])
   ]
 })
-export class ConcentrationComponent implements OnInit {
-
+export class ConcentrationComponent implements OnInit, OnDestroy {
   players: string[] = [];
   trilonArray: TrilonData[] = [];
   initialState: TrilonState = 'number';
   currentPuzzle!: RandomizedPuzzle;
+  destroyed$: Subject<void> = new Subject<void>()
 
   prizeName: string = '';
 
@@ -61,6 +60,7 @@ export class ConcentrationComponent implements OnInit {
   showPlayAgain = false;
   showEndGame = true;
   finalGuess = false; // this is the last guess.
+  resizeMarker = 0
 
   firstPlay = true;
 
@@ -73,6 +73,12 @@ export class ConcentrationComponent implements OnInit {
   ngOnInit(): void {
     this.initTrilonSound();
     this.puzzleService.getPuzzle().pipe(take(1)).subscribe(puzzle => this.currentPuzzle = puzzle);
+
+    fromEvent(window, 'resize')
+      .pipe(
+        takeUntil(this.destroyed$),
+        debounceTime(200)
+      ).subscribe(() => this.resizeMarker = Math.random());
   }
 
   acceptPlayerData(playerData: PlayerData) {
@@ -369,6 +375,11 @@ export class ConcentrationComponent implements OnInit {
   acceptGameOptions(gameOptions: GameOptions) {
     this.gameOptions = gameOptions;
     this.trilonSound.volume = this.gameOptions.volume
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
 }

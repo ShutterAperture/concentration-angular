@@ -4,7 +4,6 @@
 
 /* Overall container for board and score...the show's set */
 #game-set {
-
   width: 80%;
   min-width: 990px;
   margin: 0 auto;
@@ -21,7 +20,6 @@
     align-items: flex-start;
     justify-content: space-between;
   }
-
 }
 
 .end-game__container {
@@ -157,6 +155,47 @@ button {
     width: 320px;
     max-width: calc(100% - 30px);
     font-size: .9em;
+  }
+
+  .solution-placeholder {
+    height: 120px;
+  }
+}
+
+@media only screen and (min-width: 1500px) {
+  #game-set {
+    width: calc(100vw - 100px);
+    min-width: 990px;
+    min-height: 650px;
+  }
+
+
+  #game-area {
+    width: calc(100% - 235px);
+  }
+
+  #gameboard {
+    border-radius: .6em;
+    margin: 0 auto 30px;
+    width: 753px;
+    height: 585px;
+    box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
+    padding: 15px;
+
+    ca-game-option {
+      position: absolute;
+      left: 0;
+      top: -30px;
+    }
+  }
+
+
+
+  #message,
+  #explanation,
+  {
+    width: 750px;
+    max-width: calc(100% - 30px);
   }
 
   .solution-placeholder {

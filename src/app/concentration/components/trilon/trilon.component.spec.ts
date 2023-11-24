@@ -5,14 +5,21 @@ import { TrilonData } from '../../interfaces';
 import { TrilonComponent } from './trilon.component';
 
 let mediaMobileMatches = false;
-let mobileRetinaMatches = false;
+let retinaMatches = false;
+let mediaLargeDesktopMatches = false
 
 const fakeMediaChecker = (media: string) => {
   let matches: boolean
   if(media === '(max-width: 600px)' ){
-    matches=  mediaMobileMatches
+    matches =  mediaMobileMatches
   }
-  else matches = mobileRetinaMatches
+  else if(media === '(min-width: 1500px)' ){
+    matches =  mediaLargeDesktopMatches
+  }
+  else if(media === '(min-width: 792px) and (min-resolution: 192dpi)' ){
+    matches =  retinaMatches
+  }
+  else matches = false
   return {matches, media}
 }
 const mockWindow = {
@@ -37,7 +44,8 @@ describe('TrilonComponent', () => {
     fixture.detectChanges();
 
     mediaMobileMatches = false;
-    mobileRetinaMatches = false;
+    retinaMatches = false;
+    mediaLargeDesktopMatches = false;
 
   });
 
@@ -82,18 +90,16 @@ describe('TrilonComponent', () => {
       const expectedStyleObject = {
         backgroundImage : `url(/assets/puzzles/pzzl-003.gif)`,
         backgroundPosition: `-200px -130px`,
-        backgroundSize: '492px 390px'
       }
       component.generatePuzzleStyleObject();
       expect(component.puzzleStyleObject).toEqual(expectedStyleObject)
     })
     it('should generate a style object for the trilon, when non-mobile, retina', () => {
-      mobileRetinaMatches = true;
+      retinaMatches = true;
 
       const expectedStyleObject = {
         backgroundImage : `url(/assets/puzzles/pzzl-003-2x.gif)`,
         backgroundPosition: `-200px -130px`,
-        backgroundSize: '492px 390px'
       }
       component.generatePuzzleStyleObject();
       expect(component.puzzleStyleObject).toEqual(expectedStyleObject)
@@ -104,10 +110,27 @@ describe('TrilonComponent', () => {
       const expectedStyleObject = {
         backgroundImage : `url(/assets/puzzles/pzzl-003.gif)`,
         backgroundPosition: `-122px -80px`,
-        backgroundSize: '295px 234px'
       }
       component.generatePuzzleStyleObject();
       expect(component.puzzleStyleObject).toEqual(expectedStyleObject)
+    })
+
+    it('should generate a style object for the trilon, when large desktop', () => {
+      mediaLargeDesktopMatches = true;
+
+      const expectedStyleObject = {
+        backgroundImage : `url(/assets/puzzles/pzzl-003.gif)`,
+        backgroundPosition: `-302px -197px`,
+      }
+      component.generatePuzzleStyleObject();
+      expect(component.puzzleStyleObject).toEqual(expectedStyleObject)
+    })
+
+    it("should recalculate the style object when resizeMarker is changed", () => {
+      spyOn(component, 'generatePuzzleStyleObject').and.callThrough()
+      let marker =  0.12345;
+      component.ngOnChanges({resizeMarker: new SimpleChange(null, marker, true)});
+      expect(component.generatePuzzleStyleObject).toHaveBeenCalled();
     })
   })
 });
