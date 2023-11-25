@@ -1,22 +1,34 @@
 $narz-transition: 1s;
+// The trilons "rotate" around a center point. The trilons are tranlated backwards to the centerpoint,
+// while the faces are translated forward the same amount so they are back at the main plane
+$center-point3D-sm: 21.675px;
+$center-point3D-std: 28.9px;
+$center-point3D-lg: 43.35px;
+
+
 :host {
   &.narz {
     .trilon .num {
-      background: #8d160f;
+      background: #983200;
 
-      .inner {
+    .inner {
         margin: 9px 12px;
         height: 45px;
-        background: #f6c257;
-        font-size: 2.6em;
+        background: #F9DA8A;
+        font-size: 2.4em;
         line-height: 1.1;
-        color: #944500;
+        color: #7D4716;
 
-        @media only screen and (max-width: 600px) {
-          margin: 4px 5px;
-          height: 31px;
-          font-size: 1.9em;
+      @media only screen and (max-width: 600px) {
+          margin: 5px 6px;
+          height: 29px;
+          font-size: 1.8em;
           line-height: 1;
+        }
+      @media screen and (min-width: 1500px){
+        margin: 12px 16px;
+        height: 67px;
+        font-size: 3.6em;
         }
       }
     }
@@ -24,31 +36,32 @@ $narz-transition: 1s;
 
   &.blumenthal {
     .pzl {
-      filter: grayscale(1) invert(1);
+      filter: grayscale(1) invert(1) contrast(1.4);
     }
   }
 }
 
+
 .trilon {
   $transform-transition: .8s;
+
   position: absolute;
   width: 98px;
   height: 63px;
   transform-style: preserve-3d;
-  -webkit-transform-style: preserve-3d;
   transition: transform $transform-transition;
-  -webkit-transition: -webkit-transform $transform-transition;
-  transform: translateZ(-28.9px);
-  -webkit-transform: translateZ(-28.9px);
+  transform: translateZ(-$center-point3D-std);
 
   &.state-prize {
-    transform: translateZ(-28.9px) rotateY(-120deg);
-    -webkit-transform: translateZ(-28.9px) rotateY(-120deg);
+    transform: translateZ(-$center-point3D-std) rotateY(-120deg);
   }
 
   &.state-puzzle {
-    transform: translateZ(-28.9px) rotateY(-240deg);
-    -webkit-transform: translateZ(-28.9px) rotateY(-240deg);
+    transform: translateZ(-$center-point3D-std) rotateY(-240deg);
+  }
+
+  .inner {
+    transform-style: preserve-3d;
   }
 
   // vertical placement
@@ -73,7 +86,6 @@ $narz-transition: 1s;
     vertical-align: middle;
     text-align: center;
     backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
   }
 }
 
@@ -81,8 +93,7 @@ $narz-transition: 1s;
 
 .num {
   background: #DEBE4E;
-  transform: translateZ(28.9px);;
-  -webkit-transform: translateZ(28.9px);
+  transform: translateZ($center-point3D-std);
   transition: background-color $narz-transition;
 
   .inner {
@@ -94,12 +105,10 @@ $narz-transition: 1s;
     color: #FFF;
     transition: all $narz-transition;
   }
-
 }
 
 .prize {
-  transform: rotateY(120deg) translateZ(28.9px);
-  -webkit-transform: rotateY(120deg) translateZ(28.9px);
+  transform: rotateY(120deg) translateZ($center-point3D-std);
 
   .inner {
     display: table-cell;
@@ -108,7 +117,7 @@ $narz-transition: 1s;
     height: inherit;
     font: 400 .95em 'Open Sans', sans-serif;
     color: #FFF;
-    background: #000;
+    background: #181818;
 
     /* Take/Forfeit */
     .transfer {
@@ -131,16 +140,26 @@ $narz-transition: 1s;
 .pzl {
   background: #FFF;
   color: #000;
-  transform: rotateY(-120deg) translateZ(28.9px);
-  -webkit-transform: rotateY(-120deg) translateZ(28.9px);
+  transform: rotateY(-120deg) translateZ($center-point3D-std);
   filter: grayscale(0) invert(0);
-  transition: $narz-transition;
+  background-size: 492px 390px;
+  transition: transform $narz-transition, filter $narz-transition;
 }
 
 @media only screen and (max-width: 600px) {
   .trilon {
     width: 60px;
     height: 39px;
+
+    transform: translateZ(-$center-point3D-sm);
+
+    &.state-prize {
+      transform: translateZ(-$center-point3D-sm) rotateY(-120deg);
+    }
+
+    &.state-puzzle {
+      transform: translateZ(-$center-point3D-sm) rotateY(-240deg);
+    }
 
     // vertical placement
     @for $i from 0 through 5 {
@@ -158,6 +177,7 @@ $narz-transition: 1s;
   }
 
   .num {
+    transform: translateZ($center-point3D-sm);
     .inner {
       margin: 7px 9px;
       height: 25px;
@@ -167,6 +187,7 @@ $narz-transition: 1s;
   }
 
   .prize {
+    transform: rotateY(120deg) translateZ($center-point3D-sm);
     .inner {
       font-size: .65em;
       letter-spacing: -.05em;
@@ -186,6 +207,81 @@ $narz-transition: 1s;
         text-transform: uppercase;
       }
     }
+  }
+
+  .pzl {
+    transform: rotateY(-120deg) translateZ($center-point3D-sm);
+    background-size: 295px 234px;
+  }
+
+}
+
+@media only screen and (min-width: 1500px) {
+  .trilon {
+    width: 147px;
+    height: 94px;
+
+    transform: translateZ(-$center-point3D-lg);
+
+    &.state-prize {
+      transform: translateZ(-$center-point3D-lg) rotateY(-120deg);
+    }
+
+    &.state-puzzle {
+      transform: translateZ(-$center-point3D-lg) rotateY(-240deg);
+    }
+
+    // vertical placement
+    @for $i from 0 through 5 {
+      &.row#{$i} {
+        top: 3px + ($i * 97px);
+      }
+    }
+
+    // horizontal placement
+    @for $i from 0 through 4 {
+      &.col#{$i} {
+        left: 3px + ($i * 150px);
+      }
+    }
+  }
+
+  .num {
+    transform: translateZ($center-point3D-lg);
+    .inner {
+      margin: 18px 24px;
+      height: 58px;
+      font: 700 2.5em 'Open Sans', sans-serif;
+      line-height: 1.3;
+    }
+  }
+
+  .prize {
+    transform: rotateY(120deg) translateZ($center-point3D-lg);
+    .inner {
+      font-size: 1.2em;
+      letter-spacing: -.05em;
+      line-height: 1;
+
+      /* Take/Forfeit */
+      .transfer {
+        font-size: 1.4em;
+      }
+
+      &.wildcard {
+        color: #F9CA2F;
+        font-weight: 700;
+        font-size: 1.95em;
+        font-style: italic;
+        line-height: 1.1;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  .pzl {
+    transform: rotateY(-120deg) translateZ($center-point3D-lg);
+    background-size: 745px 585px;
   }
 
 }

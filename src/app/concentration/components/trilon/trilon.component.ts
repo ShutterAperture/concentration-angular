@@ -10,10 +10,11 @@ export const ADJ_TILE_HEIGHT = 65; // dimensions including borders; used to calc
   templateUrl: './trilon.component.html',
   styleUrls: ['./trilon.component.scss']
 })
-export class TrilonComponent implements OnChanges {
+export class TrilonComponent implements OnChanges{
   @Input() trilonData!: TrilonData
   @Input() puzzleUrl!: string;
   @Input() puzzleUrlHiRes?: string;
+  @Input() resizeMarker?: number
   prizeType: 'transfer' | 'wild' | 'prize' = 'prize'
   puzzleStyleObject!: StyleObject;
 
@@ -30,19 +31,27 @@ export class TrilonComponent implements OnChanges {
       }
       this.generatePuzzleStyleObject();
     }
+    if(changes?.resizeMarker?.currentValue){
+      this.generatePuzzleStyleObject();
+    }
   }
 
   generatePuzzleStyleObject() {
     let adjustedTileHeight = ADJ_TILE_HEIGHT;
     let adjustedTileWidth = ADJ_TILE_WIDTH;
-    let backgroundSize =  `492px 390px`
 
-    const mobile = this.window.matchMedia('(max-width: 600px)')
+    const mobile = this.window.matchMedia('(max-width: 600px)');
+    const largeDesktop = this.window.matchMedia('(min-width: 1500px)');
 
     if(mobile.matches) {
-      adjustedTileHeight = adjustedTileHeight *.6  + 1
-      adjustedTileWidth = adjustedTileWidth * .6 + 1
-      backgroundSize = `295px 234px`
+      adjustedTileHeight = adjustedTileHeight *.6  + 1;
+      adjustedTileWidth = adjustedTileWidth * .6 + 1;
+    }
+
+    if(largeDesktop.matches) {
+      console.log("in large")
+      adjustedTileHeight = adjustedTileHeight * 1.5  + 1
+      adjustedTileWidth = adjustedTileWidth * 1.5 + 1
     }
 
     const bgtop = -1 * (this.trilonData.row * adjustedTileHeight) + 'px';
@@ -57,7 +66,6 @@ export class TrilonComponent implements OnChanges {
     this.puzzleStyleObject = {
       backgroundImage : `url(${bgPath})`,
       backgroundPosition: `${bgleft} ${bgtop}`,
-      backgroundSize: backgroundSize
     }
   }
 
