@@ -71,6 +71,20 @@ export const AVAILABLE_PUZZLES: Puzzle[] = [
     explanation: 'Caw + L Off The W + Eye + ld',
     solution: 'Call of the Wild',
     author: 'Ted O\'Hara'
+  },
+  {
+    url: 'pzzl-010.gif',
+    urlRetina: 'pzzl-010-2x.gif',
+    explanation: 'A Ch + ship On y + oar sh + hoe + D + ear',
+    solution: 'A chip on your shoulder',
+    author: 'Ted O\'Hara'
+  },
+  {
+    url: 'pzzl-011.gif',
+    urlRetina: 'pzzl-011-2x.gif',
+    explanation: 'Awl b + ark hand no B + eye + t',
+    solution: 'All bark and no bite',
+    author: 'Ted O\'Hara'
   }
 ];
 
