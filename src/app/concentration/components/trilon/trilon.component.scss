@@ -5,6 +5,33 @@ $center-point3D-sm: 21.675px;
 $center-point3D-std: 28.9px;
 $center-point3D-lg: 43.35px;
 
+$transform-transition: 1.1s;
+
+@mixin trilonStates ($centerPoint) {
+   transform: translateZ(-$centerPoint);
+   &.state-prize {
+     transform: translateZ(-$centerPoint) rotateY(-120deg);
+   }
+
+   &.state-puzzle {
+     transform: translateZ(-$centerPoint) rotateY(-240deg);
+   }
+}
+
+@mixin trilonFaces ($centerPoint) {
+  .num {
+    transform: translateZ($centerPoint);
+  }
+
+  .prize {
+    transform: rotateY(120deg) translateZ($centerPoint);
+  }
+
+  .pzl {
+    transform: rotateY(-120deg) translateZ($centerPoint);
+  }
+}
+
 
 :host {
   &.narz {
@@ -39,26 +66,40 @@ $center-point3D-lg: 43.35px;
       filter: grayscale(1) invert(1) contrast(1.4);
     }
   }
+
+  // We turn off transitions so we can change the number rotation from 0deg to 360 deg
+  // without seeing any spinning. The rotation allows the puzzle reset to turn in the
+  // opposite direction.
+
+  &.inhibit {
+    .trilon {
+      transition: none;
+    }
+  }
+
+  &.exposeReady {
+    .trilon.state-number {
+      transform: translateZ(-$center-point3D-std) rotateY(-360deg);
+    }
+    .num {
+      transform: translateZ($center-point3D-std);
+      // Leaving here for diagnostic purposes - makes state visible
+      //.inner {
+      //  background: #101010;
+      //}
+    }
+  }
 }
 
 
 .trilon {
-  $transform-transition: .8s;
-
   position: absolute;
   width: 98px;
   height: 63px;
   transform-style: preserve-3d;
   transition: transform $transform-transition;
-  transform: translateZ(-$center-point3D-std);
 
-  &.state-prize {
-    transform: translateZ(-$center-point3D-std) rotateY(-120deg);
-  }
-
-  &.state-puzzle {
-    transform: translateZ(-$center-point3D-std) rotateY(-240deg);
-  }
+  @include trilonStates($center-point3D-std);
 
   .inner {
     transform-style: preserve-3d;
@@ -87,13 +128,13 @@ $center-point3D-lg: 43.35px;
     text-align: center;
     backface-visibility: hidden;
   }
-}
+} // end, trilon
 
-// end, trilon
+
+@include trilonFaces ($center-point3D-std);
 
 .num {
   background: #DEBE4E;
-  transform: translateZ($center-point3D-std);
   transition: background-color $narz-transition;
 
   .inner {
@@ -108,7 +149,6 @@ $center-point3D-lg: 43.35px;
 }
 
 .prize {
-  transform: rotateY(120deg) translateZ($center-point3D-std);
 
   .inner {
     display: table-cell;
@@ -140,7 +180,6 @@ $center-point3D-lg: 43.35px;
 .pzl {
   background: #FFF;
   color: #000;
-  transform: rotateY(-120deg) translateZ($center-point3D-std);
   filter: grayscale(0) invert(0);
   background-size: 492px 390px;
   transition: transform $narz-transition, filter $narz-transition;
@@ -151,15 +190,7 @@ $center-point3D-lg: 43.35px;
     width: 60px;
     height: 39px;
 
-    transform: translateZ(-$center-point3D-sm);
-
-    &.state-prize {
-      transform: translateZ(-$center-point3D-sm) rotateY(-120deg);
-    }
-
-    &.state-puzzle {
-      transform: translateZ(-$center-point3D-sm) rotateY(-240deg);
-    }
+    @include trilonStates($center-point3D-sm);
 
     // vertical placement
     @for $i from 0 through 5 {
@@ -176,8 +207,9 @@ $center-point3D-lg: 43.35px;
     }
   }
 
+  @include trilonFaces ($center-point3D-sm);
+
   .num {
-    transform: translateZ($center-point3D-sm);
     .inner {
       margin: 7px 9px;
       height: 25px;
@@ -187,7 +219,6 @@ $center-point3D-lg: 43.35px;
   }
 
   .prize {
-    transform: rotateY(120deg) translateZ($center-point3D-sm);
     .inner {
       font-size: .65em;
       letter-spacing: -.05em;
@@ -210,7 +241,6 @@ $center-point3D-lg: 43.35px;
   }
 
   .pzl {
-    transform: rotateY(-120deg) translateZ($center-point3D-sm);
     background-size: 295px 234px;
   }
 
@@ -221,15 +251,7 @@ $center-point3D-lg: 43.35px;
     width: 147px;
     height: 94px;
 
-    transform: translateZ(-$center-point3D-lg);
-
-    &.state-prize {
-      transform: translateZ(-$center-point3D-lg) rotateY(-120deg);
-    }
-
-    &.state-puzzle {
-      transform: translateZ(-$center-point3D-lg) rotateY(-240deg);
-    }
+    @include trilonStates($center-point3D-lg);
 
     // vertical placement
     @for $i from 0 through 5 {
@@ -246,8 +268,9 @@ $center-point3D-lg: 43.35px;
     }
   }
 
+  @include trilonFaces ($center-point3D-lg);
+
   .num {
-    transform: translateZ($center-point3D-lg);
     .inner {
       margin: 18px 24px;
       height: 58px;
@@ -257,7 +280,6 @@ $center-point3D-lg: 43.35px;
   }
 
   .prize {
-    transform: rotateY(120deg) translateZ($center-point3D-lg);
     .inner {
       font-size: 1.2em;
       letter-spacing: -.05em;
@@ -280,7 +302,6 @@ $center-point3D-lg: 43.35px;
   }
 
   .pzl {
-    transform: rotateY(-120deg) translateZ($center-point3D-lg);
     background-size: 745px 585px;
   }
 

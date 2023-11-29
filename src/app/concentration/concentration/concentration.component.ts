@@ -1,6 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { debounceTime, fromEvent, Subject, takeUntil } from 'rxjs';
+import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { delay, mergeMap, take, tap } from 'rxjs/operators';
 import { ScoreboardComponent } from '../components/scoreboard/scoreboard.component';
 import { COMPARISON_INTERVAL, DEFAULT_GAME_OPTIONS, MESSAGE_DELAY, PLAY_AGAIN_DELAY, TRILON_SOUND_SOURCE } from '../constants';
@@ -28,7 +29,7 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
   trilonArray: TrilonData[] = [];
   initialState: TrilonState = 'number';
   currentPuzzle!: RandomizedPuzzle;
-  destroyed$: Subject<void> = new Subject<void>()
+  destroyed$: Subject<void> = new Subject<void>();
 
   prizeName: string = '';
 
@@ -60,25 +61,25 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
   showPlayAgain = false;
   showEndGame = true;
   finalGuess = false; // this is the last guess.
-  resizeMarker = 0
+  resizeMarker = 0;
 
   firstPlay = true;
+  inhibitTransitions = false; // turn off rotation CSS transition
+  exposeReady = false;
 
   gameOptions: GameOptions = DEFAULT_GAME_OPTIONS;
 
   @ViewChild(ScoreboardComponent) scoreboardComponent!: ScoreboardComponent;
 
-  constructor(private puzzleService: PuzzleService) { }
+  constructor(private puzzleService: PuzzleService) {
+  }
 
   ngOnInit(): void {
     this.initTrilonSound();
     this.puzzleService.getPuzzle().pipe(take(1)).subscribe(puzzle => this.currentPuzzle = puzzle);
 
     fromEvent(window, 'resize')
-      .pipe(
-        takeUntil(this.destroyed$),
-        debounceTime(200)
-      ).subscribe(() => this.resizeMarker = Math.random());
+      .pipe(takeUntil(this.destroyed$), debounceTime(200)).subscribe(() => this.resizeMarker = Math.random());
   }
 
   acceptPlayerData(playerData: PlayerData) {
@@ -103,10 +104,11 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
 
   playTrilon() {
     if (this.gameOptions.enableSound) {
-      if(this.firstPlay || this.trilonSound.ended) {
+      if (this.firstPlay || this.trilonSound.ended) {
         this.trilonSound.play();
         this.firstPlay = false;
-      } else {
+      }
+      else {
         fromEvent(this.trilonSound, 'ended')
           .pipe(take(1))
           .subscribe(() => this.trilonSound.play());
@@ -133,7 +135,7 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
       const currentState = trilonData.trilonState;
       if (currentState != 'number' && currentState != this.initialState) {return;} // bail if not turned to the number face
       trilonData.trilonState = 'prize';
-      this.playTrilon()
+      this.playTrilon();
       this.prizeName = trilonData.prizeName;
 
       this.tilePair.push(trilonData);
@@ -141,14 +143,14 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
         this.scoreboardComponent.addPrize(trilonData.prizeName);
         if (this.tilePair.length === 4) {
           this.doubleWildState = false;
-          const tilePair = [...this.tilePair]
+          const tilePair = [ ...this.tilePair ];
 
           this.tilePair = [];
           this.setMessage(undefined);
           setTimeout(() => tilePair.forEach(td => {
             td.trilonState = 'puzzle';
-            this.playTrilon()
-          }), COMPARISON_INTERVAL)
+            this.playTrilon();
+          }), COMPARISON_INTERVAL);
         }
       }
       else {
@@ -208,7 +210,7 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
       this.clickAllowed = true; // allow more numbers to be chosen
       const newState = match ? 'puzzle' : 'number';
       this.tilePair.forEach(trilonData => trilonData.trilonState = newState);
-      this.playTrilon()
+      this.playTrilon();
       this.tilePair = [];
     };
     if (this.doubleWildState) {
@@ -249,27 +251,41 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
         const clearBoth = false;
         const doCheck = false;
         this.hideSolutionForm(doCheck);
+        console.log("here")
         this.revealBoard(clearBoth);
         this.setMessage('That\'s right! Congratulations!');
       }
 
       else {
         this.hideSolutionForm();
+        console.log("here, wrong")
         this.setMessage('Sorry, that\'s incorrect. It\'s still your turn.');
       }
 
     }
     else {
+      console.log("here, null")
       this.hideSolutionForm();
     }
   }
 
   setBoardState(trilonState: TrilonState) {
     this.trilonArray.forEach(trilonData => trilonData.trilonState = trilonState);
-    this.playTrilon()
+    this.playTrilon();
   }
 
-  revealBoard(clearBoth: boolean) {
+  switchTurnDirection(reverse: boolean): Promise<void> {
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    this.inhibitTransitions = true;
+    this.exposeReady = reverse;
+    return delay(200)
+      .then(() => {
+        this.inhibitTransitions = false
+      });// wait, then allow transitions to be visible
+  }
+
+  async revealBoard(clearBoth: boolean) {
+    await this.switchTurnDirection(true); // Updates number state degrees, so the rotation is reversed
     this.setBoardState('puzzle');
     this.puzzleService.appendViewedPuzzle(this.currentPuzzle.url);
     if (clearBoth) {
@@ -350,16 +366,19 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
     this.hideSolutionForm(doMatchCheck);
   }
 
-  playAgain() {
+  async playAgain() {
+    //this.inhibitTransitions = false;
     this.clickAllowed = true;
     this.showExplanation = false;
     this.explanation = undefined;
     this.setMessage(undefined);
     this.setBoardState('number');
+
     this.showPlayAgain = false;
 
     this.showEndGame = true;
     const clearBoth = true;
+
     this.scoreboardComponent.clearPrizes(clearBoth);
     this.puzzleService.advanceToNextPuzzle();
 
@@ -367,14 +386,16 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
       .pipe(
         delay(PLAY_AGAIN_DELAY),
         tap((puzzle: RandomizedPuzzle) => this.currentPuzzle = puzzle),
-        mergeMap(() => this.puzzleService.getTrilonData(this.singleMode, this.initialState))
-      )
-      .subscribe(trilonData => this.setTrilonArray(trilonData));
+        tap(() => this.switchTurnDirection(false)),
+        mergeMap(() => this.puzzleService.getTrilonData(this.singleMode, this.initialState)))
+      .subscribe(trilonData => this.setTrilonArray(trilonData))
+
+    // await this.switchTurnDirection(false);
   }
 
   acceptGameOptions(gameOptions: GameOptions) {
     this.gameOptions = gameOptions;
-    this.trilonSound.volume = this.gameOptions.volume
+    this.trilonSound.volume = this.gameOptions.volume;
   }
 
   ngOnDestroy(): void {

@@ -18,12 +18,16 @@
             <ca-trilon *ngFor="let trilon of trilonArray; index as i" [trilonData]="trilon"
                        [puzzleUrl]="currentPuzzle.url" (click)="handleTrilonClick(trilon)"
                        [resizeMarker]=resizeMarker
-                       [ngClass]="{narz: gameOptions?.narzAppearance, blumenthal: gameOptions?.blumenthalPuzzles}"
+                       [ngClass]="{
+                          narz: gameOptions?.narzAppearance,
+                          inhibit: inhibitTransitions,
+                          blumenthal: gameOptions?.blumenthalPuzzles,
+                          exposeReady: exposeReady
+                          }"
                        [puzzleUrlHiRes]="currentPuzzle.urlRetina"></ca-trilon>
           </div>
           <p class="puzzle-author">Puzzle by <strong>{{currentPuzzle.author}}</strong></p>
         </div>
-
 
         <div class="message-container">
           <p @insertRemoveTrigger *ngIf="!!message" id="message">{{message}}</p>
