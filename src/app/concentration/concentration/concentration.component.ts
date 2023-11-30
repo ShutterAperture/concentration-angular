@@ -1,13 +1,14 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { debounceTime, fromEvent, Subject, takeUntil } from 'rxjs';
-import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { delay, mergeMap, take, tap } from 'rxjs/operators';
 import { ScoreboardComponent } from '../components/scoreboard/scoreboard.component';
 import { COMPARISON_INTERVAL, DEFAULT_GAME_OPTIONS, MESSAGE_DELAY, PLAY_AGAIN_DELAY, TRILON_SOUND_SOURCE } from '../constants';
 import { GameOptions, PlayerData, RandomizedPuzzle, TrilonData } from '../interfaces';
 import { PuzzleService } from '../services/puzzle.service';
 import { TrilonState } from '../types';
+
+export const switchDirectionDelay = 200;
 
 @Component({
   selector: 'ca-concentration',
@@ -79,7 +80,10 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
     this.puzzleService.getPuzzle().pipe(take(1)).subscribe(puzzle => this.currentPuzzle = puzzle);
 
     fromEvent(window, 'resize')
-      .pipe(takeUntil(this.destroyed$), debounceTime(200)).subscribe(() => this.resizeMarker = Math.random());
+      .pipe(
+        takeUntil(this.destroyed$),
+        debounceTime(200)
+      ).subscribe(() => this.resizeMarker = Math.random());
   }
 
   acceptPlayerData(playerData: PlayerData) {
@@ -251,20 +255,17 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
         const clearBoth = false;
         const doCheck = false;
         this.hideSolutionForm(doCheck);
-        console.log("here")
         this.revealBoard(clearBoth);
         this.setMessage('That\'s right! Congratulations!');
       }
 
       else {
         this.hideSolutionForm();
-        console.log("here, wrong")
         this.setMessage('Sorry, that\'s incorrect. It\'s still your turn.');
       }
 
     }
     else {
-      console.log("here, null")
       this.hideSolutionForm();
     }
   }
@@ -278,7 +279,7 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     this.inhibitTransitions = true;
     this.exposeReady = reverse;
-    return delay(200)
+    return delay(switchDirectionDelay)
       .then(() => {
         this.inhibitTransitions = false
       });// wait, then allow transitions to be visible
