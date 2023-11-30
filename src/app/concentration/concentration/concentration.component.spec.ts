@@ -12,7 +12,7 @@ import { RandomizedPuzzle, TrilonData } from '../interfaces';
 import { PuzzleService } from '../services/puzzle.service';
 import { TrilonState } from '../types';
 
-import { ConcentrationComponent } from './concentration.component';
+import { ConcentrationComponent, switchDirectionDelay } from './concentration.component';
 
 const unmatchedBoard: number[] = [];
 for (let i = 1; i <= 30; i++) {unmatchedBoard.push(i);}
@@ -104,6 +104,7 @@ describe('ConcentrationComponent', () => {
       expect(component.players).toEqual([ 'Prizes' ]);
     });
   });
+
   describe('initTrilonSound', () => {
     it('should initialize the trilon sound', () => {
       const expected = new Audio(TRILON_SOUND_SOURCE);
@@ -433,8 +434,10 @@ describe('ConcentrationComponent', () => {
       spyOn(component, 'setBoardState');
       component.currentPuzzle = MOCK_RANDOMIZED_PUZZLE_ARRAY[1];
     });
-    it('should set the board state to puzzle, and set flags', () => {
+
+    it('should set the board state to puzzle, and set flags', fakeAsync(() => {
       component.revealBoard(false);
+      tick(switchDirectionDelay);
       expect(component.setBoardState).toHaveBeenCalledWith('puzzle');
 
       expect(component.explanation).toBe(`(${MOCK_RANDOMIZED_PUZZLE_ARRAY[1].explanation})`);
@@ -442,22 +445,25 @@ describe('ConcentrationComponent', () => {
       expect(component.showGiveUp).toBe(false);
       expect(component.showPlayAgain).toBe(true);
       expect(component.showEndGame).toBe(false);
-    });
-    it('should record that the current puzzle has been viewed', () => {
+    }));
+    it('should record that the current puzzle has been viewed', fakeAsync(() => {
       component.revealBoard(false);
+      tick(switchDirectionDelay);
       expect(mockPuzzleService.appendViewedPuzzle).toHaveBeenCalledWith(component.currentPuzzle.url);
-    });
-    it('should call scoreboard clear prizes if passed true, in single mode', () => {
+    }));
+    it('should call scoreboard clear prizes if passed true, in single mode', fakeAsync(() => {
       component.singleMode = true;
       component.revealBoard(true);
+      tick(switchDirectionDelay);
       expect(component.scoreboardComponent.clearPrizes).toHaveBeenCalledWith(true);
-    });
+    }));
 
-    it('in non-single mode, it should clear the opponent\'s prizes', () => {
+    it('in non-single mode, it should clear the opponent\'s prizes', fakeAsync(() => {
       component.singleMode = false;
       component.revealBoard(true);
+      tick(switchDirectionDelay);
       expect(component.scoreboardComponent.clearPrizes).toHaveBeenCalledWith(false);
-    });
+    }));
   });
 
   describe('setMessage', () => {
@@ -576,7 +582,7 @@ describe('ConcentrationComponent', () => {
 
     it('should set flags to start over', fakeAsync(() => {
       component.playAgain();
-
+      tick(switchDirectionDelay);
       expect(component.showExplanation).toBe(false);
       expect(component.explanation).toBe(undefined);
       expect(component.clickAllowed).toBe(true);

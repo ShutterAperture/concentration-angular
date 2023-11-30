@@ -27,10 +27,13 @@ describe('SolutionEntryComponent', () => {
 
   describe('checkSolution', () => {
     it('should emit out the entered solution via solutionProposed', () => {
+      const mockEvent = { preventDefault: () => undefined } as unknown as Event;
       spyOn(component.solutionProposed, 'emit')
+      spyOn(mockEvent, 'preventDefault')
       component.solutionForm.get('solution')?.patchValue('This is the solution');
-      component.checkSolution();
+      component.checkSolution(mockEvent);
       expect(component.solutionProposed.emit).toHaveBeenCalledWith('This is the solution')
+      expect(mockEvent.preventDefault).toHaveBeenCalled()
     })
   });
 

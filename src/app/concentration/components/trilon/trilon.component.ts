@@ -49,7 +49,6 @@ export class TrilonComponent implements OnChanges{
     }
 
     if(largeDesktop.matches) {
-      console.log("in large")
       adjustedTileHeight = adjustedTileHeight * 1.5  + 1
       adjustedTileWidth = adjustedTileWidth * 1.5 + 1
     }

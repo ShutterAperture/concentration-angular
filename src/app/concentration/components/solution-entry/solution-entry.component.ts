@@ -19,7 +19,10 @@ export class SolutionEntryComponent implements OnInit {
     });
   }
 
-  checkSolution() {
+  checkSolution(evt: Event) {
+    if(evt) {
+      evt.preventDefault();
+    }
     // @ts-ignore
     this.solutionProposed.emit(this.solutionForm.get('solution').value)
   }
