@@ -5,7 +5,7 @@ $center-point3D-sm: 21.675px;
 $center-point3D-std: 28.9px;
 $center-point3D-lg: 43.35px;
 
-$transform-transition: 1.1s;
+$transform-transition: .9s;
 
 @mixin trilonStates($centerPoint) {
   transform: translateZ(-$centerPoint);
@@ -112,7 +112,7 @@ $transform-transition: 1.1s;
   width: 98px;
   height: 63px;
   transform-style: preserve-3d;
-  transition: transform $transform-transition;
+  transition: transform $transform-transition ease-in-out;
 
   @include trilonStates($center-point3D-std);
 
