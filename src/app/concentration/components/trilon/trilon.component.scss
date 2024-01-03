@@ -259,13 +259,15 @@ $transform-transition: .9s;
 
   .prize {
     .inner {
-      font-size: 1.2em;
+      font-size: 1.3em;
+      padding: 0 10px;
       letter-spacing: -.05em;
       line-height: 1;
 
       /* Take/Forfeit */
       .transfer {
         font-size: 1.4em;
+        line-height: 1.1;
       }
 
       &.wildcard {
