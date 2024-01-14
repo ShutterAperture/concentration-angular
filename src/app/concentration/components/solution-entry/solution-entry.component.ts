@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, AfterViewInit,  Output, ViewChild, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -6,13 +6,12 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   templateUrl: './solution-entry.component.html',
   styleUrls: ['./solution-entry.component.scss']
 })
-export class SolutionEntryComponent implements OnInit, AfterViewInit  {
+export class SolutionEntryComponent implements OnInit  {
   @Input() showGiveUp = false;
   @Output() solutionProposed: EventEmitter<string|null> = new EventEmitter<string | null>()
   @Output() giveUpGame: EventEmitter<void> = new EventEmitter<void>()
   solutionForm!: FormGroup;
 
-  @ViewChild("solutionInput") solutionInput!: ElementRef;
 
   constructor() { }
 
@@ -20,10 +19,6 @@ export class SolutionEntryComponent implements OnInit, AfterViewInit  {
     this.solutionForm = new FormGroup({
       solution: new FormControl('', [ Validators.required,])
     });
-  }
-
-  ngAfterViewInit() {
-    this.solutionInput.nativeElement.focus();
   }
 
   checkSolution(evt: Event) {

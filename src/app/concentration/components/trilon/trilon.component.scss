@@ -5,7 +5,11 @@ $center-point3D-sm: 21.675px;
 $center-point3D-std: 28.9px;
 $center-point3D-lg: 43.35px;
 
-$transform-transition: .9s;
+$narz-red: rgb(159,39,19);
+$rarz-gold: rgb(236,190,110);
+$narz-letter: rgb(166,83,21);
+
+$transform-transition: .7s;
 
 @mixin trilonStates($centerPoint) {
   transform: translateZ(-$centerPoint);
@@ -51,20 +55,21 @@ $transform-transition: .9s;
 :host {
   &.narz {
     .trilon .num {
-      background: #983200;
+      background: $narz-red;
 
       .inner {
         margin: 9px 12px;
         height: 45px;
-        background: #F9DA8A;
+        background: $rarz-gold;
+        font-weight: 700;
         font-size: 2.4em;
         line-height: 1.1;
-        color: #7D4716;
+        color: $narz-letter;
 
         @media only screen and (max-width: 600px) {
-          margin: 5px 6px;
-          height: 29px;
-          font-size: 1.8em;
+          margin: 6px 6px;
+          height: 27px;
+          font-size: 1.6em;
           line-height: 1;
         }
         @media screen and (min-width: 1500px) {
