@@ -2,6 +2,26 @@
 @import "mixins";
 @import "functions";
 
+
+
+:host {
+  --board-height: 390px;
+  --board-width: 500px;
+  --number-gap: 2px;
+
+  @media only screen and (max-width: 600px) {
+    --board-height: 246px;
+    --board-width: 310px;
+    --number-gap: 2px;
+  }
+
+  @media only screen and (min-width: 1500px) {
+    --board-height: 585px;
+    --board-width: 750px;
+    --number-gap: 3px;
+  }
+}
+
 /* Overall container for board and score...the show's set */
 #game-set {
   width: 80%;
@@ -42,8 +62,8 @@
   background: linear-gradient(to bottom, #D8D8D8, #F0F0F0, #C8C8C8);
   border-radius: .8em;
   margin: 0 auto 30px;
-  width: 500px;
-  height: 390px;
+  width: var(--board-width);
+  height: var(--board-height);
   box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
   padding: 15px;
 
@@ -61,16 +81,19 @@
 }
 
 #board {
-  perspective: 700px;
-  -webkit-perspective: 700px;
+  perspective: 2800px;
+  display: flex;
+  align-content: flex-start;
+  flex-wrap: wrap;
+  gap: var(--number-gap);
   position: relative;
   left: 0;
   top: 0;
   margin: 0;
   background: #000;
-  border: 1px solid #797979;
-  width: 100%;
-  height: 100%;
+  border: 2px solid #000;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
 }
 
 .message-container {
@@ -139,13 +162,17 @@ button {
   }
 
   #gameboard {
-    width: 310px;
-    height: 246px;
     padding: 8px;
+    border-radius: 4px;
+  }
+
+  #board {
+    border: 2px solid #000;
+    width: calc(100% - 1px);
+    height: calc(100% - 2px);
   }
 
   .puzzle-author {
-
     font-size: 12px;
     margin: 12px 0 18px;
   }
@@ -181,8 +208,6 @@ button {
   #gameboard {
     border-radius: .6em;
     margin: 0 auto 30px;
-    width: 753px;
-    height: 585px;
     box-shadow: 3px 3px 15px rgba(0, 0, 0, .5);
     padding: 15px;
 
@@ -193,7 +218,11 @@ button {
     }
   }
 
-
+  #board {
+    padding: 2px 0 0 2px;
+    width: calc(100% - 1px);
+    height: calc(100% - 4px);
+  }
 
   #message,
   #explanation,
