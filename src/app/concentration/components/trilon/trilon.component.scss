@@ -11,6 +11,22 @@ $narz-letter: rgb(166,83,21);
 
 $transform-transition: .7s;
 
+:host {
+  --trilon-width: 98px;
+  --trilon-height: 63px;
+
+  @media only screen and (max-width: 600px) {
+    --trilon-width: 60px;
+    --trilon-height: 39px;
+  }
+
+  @media only screen and (min-width: 1500px) {
+    --trilon-width: 147px;
+    --trilon-height: 94px;
+  }
+}
+
+
 @mixin trilonStates($centerPoint) {
   transform: translateZ(-$centerPoint);
   &.state-prize {
@@ -52,7 +68,17 @@ $transform-transition: .7s;
   }
 }
 
+
+
+
+
 :host {
+  flex: 0 0 var(--trilon-width);
+  width: var(--trilon-width);
+  height: var(--trilon-height);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+
   &.narz {
     .trilon .num {
       background: $narz-red;
@@ -113,9 +139,8 @@ $transform-transition: .7s;
 }
 
 .trilon {
-  position: absolute;
-  width: 98px;
-  height: 63px;
+  width: var(--trilon-width);
+  height: var(--trilon-height);
   transform-style: preserve-3d;
   transition: transform $transform-transition ease-in-out;
 
@@ -125,8 +150,6 @@ $transform-transition: .7s;
     transform-style: preserve-3d;
   }
 
-  @include generatePlacements(65px, 100px, 1px);
-
   .face {
     position: absolute;
     cursor: pointer;
@@ -135,6 +158,7 @@ $transform-transition: .7s;
     vertical-align: middle;
     text-align: center;
     backface-visibility: hidden;
+
   }
 } // end, trilon
 
@@ -193,13 +217,9 @@ $transform-transition: .7s;
 }
 
 @media only screen and (max-width: 600px) {
+
   .trilon {
-    width: 60px;
-    height: 39px;
-
     @include trilonStates($center-point3D-sm);
-
-    @include generatePlacements(41px, 62px, 1px);
   }
 
   @include trilonFaces($center-point3D-sm);
@@ -238,17 +258,11 @@ $transform-transition: .7s;
   .pzl {
     background-size: 295px 234px;
   }
-
 }
 
 @media only screen and (min-width: 1500px) {
   .trilon {
-    width: 147px;
-    height: 94px;
-
     @include trilonStates($center-point3D-lg);
-
-    @include generatePlacements(97px, 150px, 3px);
   }
 
   @include trilonFaces($center-point3D-lg);
@@ -289,5 +303,4 @@ $transform-transition: .7s;
   .pzl {
     background-size: 745px 585px;
   }
-
 }
