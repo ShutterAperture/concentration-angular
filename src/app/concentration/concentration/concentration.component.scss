@@ -8,17 +8,20 @@
   --board-height: 390px;
   --board-width: 500px;
   --number-gap: 2px;
+  --perspective:  2800px;
 
   @media only screen and (max-width: 600px) {
     --board-height: 246px;
     --board-width: 310px;
     --number-gap: 2px;
+    --perspective:  1800px;
   }
 
   @media only screen and (min-width: 1500px) {
     --board-height: 585px;
     --board-width: 750px;
     --number-gap: 3px;
+    --perspective: 4500px;
   }
 }
 
@@ -81,7 +84,7 @@
 }
 
 #board {
-  perspective: 2800px;
+  perspective: var(--perspective);
   display: flex;
   align-content: flex-start;
   flex-wrap: wrap;
