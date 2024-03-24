@@ -20,8 +20,22 @@
       <label for="opt-blumenthal-puzzle">Gray scale puzzles</label>
     </li>
     <li>
-      <input type="checkbox" id="opt-narz-mode" formControlName="narzAppearance">
-      <label for="opt-narz-mode">Jack Narz style numbers</label>
+      Appearance
+      <ul>
+        <li>
+          <input type="radio" id="opt-appearance-default" formControlName="appearance" value="default">
+          <label for="opt-appearance-default">Modern</label>
+        </li>
+        <li>
+          <input type="radio" id="opt-appearance-nbc" formControlName="appearance" value="nbc">
+          <label for="opt-appearance-nbc">Hugh Downs / Bob Clayton</label>
+        </li>
+        <li>
+          <input type="radio" id="opt-appearance-narz" formControlName="appearance" value="narz">
+          <label for="opt-appearance-narz">Jack Narz</label>
+        </li>
+      </ul>
+
     </li>
     <li>
       <button class="game-options__reset" type="button" (click)="resetOptions()">Reset</button>

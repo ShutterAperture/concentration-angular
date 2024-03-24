@@ -23,6 +23,7 @@ export class ScoreboardComponent implements OnChanges {
   @Input() singleMode = false;
   @Input() activeIndex: 0 | 1 = 0; // holds index of current player
   @Input() otherIndex: 0 | 1 = 1;  // holds index of other player
+  @Input() appearance: string = "default"
   @Output() sentMessage: EventEmitter<string> = new EventEmitter<string>();
   @Output() transferring: EventEmitter<boolean> = new EventEmitter<boolean>();
   playerPrizes: PlayerPrizes[] = [];

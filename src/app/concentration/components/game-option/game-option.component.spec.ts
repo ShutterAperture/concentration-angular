@@ -45,7 +45,7 @@ describe('GameOptionComponent', () => {
       const expectedGameOptions = {
         enableSound: false,
         volume: 0,
-        narzAppearance: false,
+        appearance: "default",
         blumenthalPuzzles: true
       }
       mockStorage.gameOptions = JSON.stringify(expectedGameOptions)
@@ -89,13 +89,13 @@ describe('GameOptionComponent', () => {
       component.subscribeToChanges();
       const change = {
         volume: .25,
-        narzAppearance: true,
+        appearance: "nbc",
         blumenthalPuzzles: false
       }
       const expected = {
         enableSound: true,
         volume: .25,
-        narzAppearance: true,
+        appearance: "nbc",
         blumenthalPuzzles: false
       }
       component.optionForm.patchValue(change);

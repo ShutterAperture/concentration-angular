@@ -6,7 +6,12 @@ import { MOCK_RANDOMIZED_PUZZLE_ARRAY } from '../../../mocks/randomized-puzzle-a
 import { MOCK_TRILON_ARRAY } from '../../../mocks/trilon-array-mock';
 import { ScoreboardComponent } from '../components/scoreboard/scoreboard.component';
 import {
-  AVAILABLE_PUZZLES, COMPARISON_INTERVAL, DEFAULT_GAME_OPTIONS, MESSAGE_DELAY, PLAY_AGAIN_DELAY, TRILON_SOUND_SOURCE
+  AVAILABLE_PUZZLES,
+  COMPARISON_INTERVAL,
+  DEFAULT_GAME_OPTIONS,
+  MESSAGE_DELAY, NBC_TRILON_SOUND_SOURCE,
+  PLAY_AGAIN_DELAY,
+  TRILON_SOUND_SOURCE
 } from '../constants';
 import { RandomizedPuzzle, TrilonData } from '../interfaces';
 import { PuzzleService } from '../services/puzzle.service';
@@ -108,23 +113,37 @@ describe('ConcentrationComponent', () => {
   describe('initTrilonSound', () => {
     it('should initialize the trilon sound', () => {
       const expected = new Audio(TRILON_SOUND_SOURCE);
+      const expectedNBC = new Audio(NBC_TRILON_SOUND_SOURCE);
       component.initTrilonSound();
-      expect(component.trilonSound).toEqual(expected);
-      expect(component.trilonSound.volume).toBe(.24);
+      expect(component.trilonSounds.regular).toEqual(expected);
+      expect(component.trilonSounds.nbc).toEqual(expectedNBC);
+
+      expect(component.trilonSounds.regular.volume).toBe(.20);
+      expect(component.trilonSounds.nbc.volume).toBe(.30);
     });
   });
 
   describe('playTrilon', () => {
     beforeEach(() => {
       component.gameOptions.enableSound = true;
-      spyOn(component.trilonSound, 'play');
+      spyOn(component.trilonSounds.regular, 'play');
+      spyOn(component.trilonSounds.nbc, 'play');
     });
 
     it('should play a sound if not stopped, or first time', () => {
-      component.firstPlay = true;
+      component.gameOptions.appearance = "default"
+      component.firstSoundPlay.regular = true;
+      component.firstSoundPlay.nbc = true;
       component.playTrilon();
-      expect(component.firstPlay).toBe(false);
-      expect(component.trilonSound.play).toHaveBeenCalled();
+      expect(component.firstSoundPlay.regular).toBe(false);
+      expect(component.firstSoundPlay.nbc).toBe(true);
+      expect(component.trilonSounds.regular.play).toHaveBeenCalled();
+      expect(component.trilonSounds.nbc.play).not.toHaveBeenCalled();
+
+      component.gameOptions.appearance = "nbc";
+      component.playTrilon();
+      expect(component.firstSoundPlay.nbc).toBe(false);
+      expect(component.trilonSounds.nbc.play).toHaveBeenCalled();
     });
   });
 
@@ -323,6 +342,7 @@ describe('ConcentrationComponent', () => {
       component.tilePair = [ component.trilonArray[0], component.trilonArray[29] ];
       component.singleMode = false;
       component.actOnMatch(false);
+      tick(1000)
       expect(component.switchPlayers).toHaveBeenCalled();
       expect(component.setMessage).toHaveBeenCalledWith('Marty, your turn.', true);
 
@@ -600,22 +620,31 @@ describe('ConcentrationComponent', () => {
 
   describe('acceptGameOptions', () => {
     it('should accept the game options emitted by the game option component', () => {
-      component.trilonSound = {
-        src: TRILON_SOUND_SOURCE,
-        volume: .24
-      } as any as HTMLAudioElement;
+
+      component.trilonSounds = {
+        regular: {
+          src: TRILON_SOUND_SOURCE,
+          volume: .20
+        } as HTMLAudioElement,
+        nbc: {
+          src: NBC_TRILON_SOUND_SOURCE,
+          volume: .30
+        } as HTMLAudioElement
+      }
+
       component.gameOptions = DEFAULT_GAME_OPTIONS;
 
       const newOptions = {
         enableSound: true,
         volume: .50,
-        narzAppearance: true,
+        appearance: "narz",
         blumenthalPuzzles: false
       };
 
       component.acceptGameOptions(newOptions);
       expect(component.gameOptions).toBe(newOptions);
-      expect(component.trilonSound.volume).toBe(newOptions.volume);
+      expect(component.trilonSounds.regular.volume).toBe(newOptions.volume);
+      expect(component.trilonSounds.nbc.volume).toBe(newOptions.volume * 1.5);
     });
   });
 

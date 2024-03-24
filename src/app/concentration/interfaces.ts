@@ -58,6 +58,6 @@ export interface PlayerData {
 export interface GameOptions {
   enableSound: boolean;
   volume: number;
-  narzAppearance: boolean;
+  appearance: string;
   blumenthalPuzzles: boolean
 }

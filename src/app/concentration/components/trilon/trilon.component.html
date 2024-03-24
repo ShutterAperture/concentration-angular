@@ -5,7 +5,7 @@
 
   <div class="face prize">
     <ng-container [ngSwitch]="prizeType">
-      <div *ngSwitchCase="'wild'" class="inner wildcard">Wild Card</div>
+      <div *ngSwitchCase="'wild'" class="inner wildcard"><span>Wild Card</span></div>
       <div *ngSwitchCase="'transfer'" class="inner">
         <div class="transfer">{{trilonData.prizeName}}</div>
         One Gift

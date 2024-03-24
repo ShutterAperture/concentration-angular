@@ -33,7 +33,11 @@ export class GameOptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  optionForm: FormGroup = new FormGroup({volume: new FormControl(), narzAppearance: new FormControl(), blumenthalPuzzles: new FormControl()});
+  optionForm: FormGroup = new FormGroup({
+    volume: new FormControl(),
+    appearance: new FormControl(),
+    blumenthalPuzzles: new FormControl()
+  });
   destroyed$: Subject<void> = new Subject<void>()
   showMenu = false;
   constructor(
@@ -43,6 +47,9 @@ export class GameOptionComponent implements OnInit, OnDestroy {
   public ngOnInit() {
     this.subscribeToChanges();
     const gameOptions = this.localStorageService.getObject<GameOptions>('gameOptions');
+    if(gameOptions && !gameOptions.appearance) {
+      gameOptions.appearance = DEFAULT_GAME_OPTIONS.appearance;
+    }
     this.gameOptions = gameOptions ?? {...DEFAULT_GAME_OPTIONS};
     this.optionForm.patchValue(this.gameOptions);
   }
