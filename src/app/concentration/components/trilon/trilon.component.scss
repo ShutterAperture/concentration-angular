@@ -183,9 +183,7 @@ $transform-transition: .7s;
           }
         }
       }
-
     }
-
   }
 
   &.blumenthal {
@@ -217,10 +215,6 @@ $transform-transition: .7s;
 
     .num {
       transform: translateZ($center-point3D-std);
-      // Leaving here for diagnostic purposes - makes state visible
-      //.inner {
-      //  background: #101010;
-      //}
     }
   }
 }
@@ -245,7 +239,6 @@ $transform-transition: .7s;
     vertical-align: middle;
     text-align: center;
     backface-visibility: hidden;
-
   }
 } // end, trilon
 
@@ -306,7 +299,6 @@ $transform-transition: .7s;
 }
 
 @media only screen and (max-width: 600px) {
-
   .trilon {
     @include trilonStates($center-point3D-sm);
   }
