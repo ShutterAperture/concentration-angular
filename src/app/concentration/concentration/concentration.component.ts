@@ -3,12 +3,22 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { debounceTime, fromEvent, Subject, takeUntil } from 'rxjs';
 import { delay, mergeMap, take, tap } from 'rxjs/operators';
 import { ScoreboardComponent } from '../components/scoreboard/scoreboard.component';
-import { COMPARISON_INTERVAL, DEFAULT_GAME_OPTIONS, MESSAGE_DELAY, PLAY_AGAIN_DELAY, TRILON_SOUND_SOURCE } from '../constants';
+import {
+  COMPARISON_INTERVAL,
+  DEFAULT_GAME_OPTIONS,
+  MESSAGE_DELAY, NBC_TRILON_SOUND_SOURCE,
+  PLAY_AGAIN_DELAY,
+  TRILON_SOUND_SOURCE
+} from '../constants';
 import { GameOptions, PlayerData, RandomizedPuzzle, TrilonData } from '../interfaces';
 import { PuzzleService } from '../services/puzzle.service';
 import { TrilonState } from '../types';
 
 export const switchDirectionDelay = 200;
+
+interface TrilonSounds {
+  [soundName: string]: HTMLAudioElement
+}
 
 @Component({
   selector: 'ca-concentration',
@@ -37,7 +47,7 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
   tilePair: TrilonData[] = [];
   unmatched: number[] = []; // array of unmatched puzzle numbers
 
-  trilonSound!: HTMLAudioElement;
+  trilonSounds!: TrilonSounds
 
   // Player tracking
   activePlayer: string = '';
@@ -64,7 +74,11 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
   finalGuess = false; // this is the last guess.
   resizeMarker = 0;
 
-  firstPlay = true;
+  firstSoundPlay = {
+    regular: true,
+    nbc: true
+  }
+
   inhibitTransitions = false; // turn off rotation CSS transition
   exposeReady = false;
 
@@ -102,20 +116,31 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
   }
 
   initTrilonSound() {
-    this.trilonSound = new Audio(TRILON_SOUND_SOURCE);
-    this.trilonSound.volume = .24;
+    this.trilonSounds = {
+      regular: new Audio(TRILON_SOUND_SOURCE),
+      nbc: new Audio(NBC_TRILON_SOUND_SOURCE)
+    }
+
+    this.trilonSounds.regular.volume = .20;
+    this.trilonSounds.nbc.volume = .3;
   }
 
   playTrilon() {
+    const soundKey = this.gameOptions.appearance !== "nbc"
+      ? "regular"
+      : "nbc";
+
+    const sound = this.trilonSounds[soundKey];
+
     if (this.gameOptions.enableSound) {
-      if (this.firstPlay || this.trilonSound.ended) {
-        this.trilonSound.play();
-        this.firstPlay = false;
+      if (this.firstSoundPlay[soundKey] || sound.ended) {
+        sound.play();
+        this.firstSoundPlay[soundKey] = false;
       }
       else {
-        fromEvent(this.trilonSound, 'ended')
+        fromEvent(sound, 'ended')
           .pipe(take(1))
-          .subscribe(() => this.trilonSound.play());
+          .subscribe(() => void sound.play());
       }
     }
   }
@@ -202,8 +227,11 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
     else {
       const clearAfterDelay = true;
       if (!this.singleMode) {
-        this.switchPlayers();
-        this.setMessage(`${this.activePlayer}, your turn.`, clearAfterDelay);
+        setTimeout(() => {
+          this.switchPlayers();
+          this.setMessage(`${this.activePlayer}, your turn.`, clearAfterDelay);
+        }, 1000)
+
       }
       else {
         this.setMessage('Try Again', clearAfterDelay);
@@ -255,7 +283,7 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
         const clearBoth = false;
         const doCheck = false;
         this.hideSolutionForm(doCheck);
-        this.revealBoard(clearBoth);
+        void this.revealBoard(clearBoth);
         this.setMessage('That\'s right! Congratulations!');
       }
 
@@ -360,7 +388,7 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
   giveUp() {
     this.setMessage(`The puzzle says, '${this.currentPuzzle.solution}'`);
     const clearBothScoreboards = true;
-    this.revealBoard(clearBothScoreboards);
+    void this.revealBoard(clearBothScoreboards);
     this.explanation = this.currentPuzzle.explanation;
     this.showExplanation = true;
     const doMatchCheck = false;
@@ -396,7 +424,9 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
 
   acceptGameOptions(gameOptions: GameOptions) {
     this.gameOptions = gameOptions;
-    this.trilonSound.volume = this.gameOptions.volume;
+
+    this.trilonSounds.regular.volume = this.gameOptions.volume;
+    this.trilonSounds.nbc.volume = this.gameOptions.volume * 1.5;
   }
 
   ngOnDestroy(): void {

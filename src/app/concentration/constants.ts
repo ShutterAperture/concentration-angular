@@ -3,7 +3,7 @@ import { GameOptions, Puzzle } from './interfaces';
 export const NUM_ROWS = 6;
 export const NUM_COLS = 5; // could be altered to change number of tiles, dimensions would need adjusting
 
-export const COOL_PRIZES = [ 'Jewelry', 'Bracelet', 'Necklace', 'Washer / Dryer', 'Hair Dryer', 'Wallet', 'Year of HBO', 'Shopping Spree', 'Disney World Trip', '16\' MacBook Pro', 'Trip to Bonaire', 'Recliner', 'Dinette Set', 'Motorcycle', 'Sofa', 'GoPro', 'Home Theater', 'Digital SLR', 'Kayak', 'Surf Board', 'Media Center', 'Motor Home', 'iPhone', 'Snowmobile', 'Jet Ski', 'Sailboat', 'Scuba Equipment', 'iPad', 'Kindle', 'Bicycle', 'Television', 'Green House', 'iTunes Gift Card', 'Snowblower', 'Stand Up Paddleboard', 'Flowers', 'Hat', 'Linens', 'Artist Supplies', 'Skis', 'Clock', 'Watch', 'Leather Jacket', 'Food Processor', 'Air Conditioner', 'Grill', 'Toaster', 'Coffee Machine', 'Scooter', 'Skateboard', "Mystery Prize" ];
+export const COOL_PRIZES = [ 'Jewelry', 'Bracelet', 'Necklace', 'Washer / Dryer', 'Hair Dryer', 'Wallet', 'Year of HBO', 'Shopping Spree', 'Disney World Trip', '16\' MacBook Pro', 'Trip to Bonaire', 'Recliner', 'Dinette Set', 'Motorcycle', 'Sofa', 'GoPro', 'Home Theater', 'Digital SLR', 'Kayak', 'Surf Board', 'Media Center', 'Motor Home', 'iPhone', 'Snowmobile', 'Jet Ski', 'Sailboat', 'Scuba Equipment', 'iPad', 'Kindle', 'Bicycle', 'Television', 'Green House', 'iTunes Gift Card', 'Snowblower', 'Stand Up Paddleboard', 'Flowers', 'Hat', 'Linens', 'Artist Supplies', 'Skis', 'Clock', 'Watch', 'Leather Jacket', 'Food Processor', 'Air Conditioner', 'Grill', 'Toaster', 'Coffee Machine', 'Scooter', 'Skateboard', "Mystery Prize", "Blender", "Vacuum", "Camping Gear", "Water Skis", "Snow Board" ];
 export const GAG_PRIZES = [ 'Watermelon', 'Razor', 'Kleenex', 'Lemon', 'Socks', 'Paint Brush', 'Compost', 'Penny for Thoughts', 'Sea Shell', 'Trunk of Junk', 'Tub of Lard', 'Valise of Grease', 'Thilly Thparrow', 'Bubble Gum' , "Cache of Trash", "Funny Bunny"];
 export const UTIL_PRIZES = [ 'Take', 'Forfeit', 'Forfeit', 'Forfeit', 'Wild' ];
 export const VIEWED_PUZZLES_KEY = 'viewed-puzzles';
@@ -86,12 +86,13 @@ export const AVAILABLE_PUZZLES: Puzzle[] = [
 
 export const DEFAULT_GAME_OPTIONS: GameOptions = {
   enableSound: true,
-  volume: .24,
-  narzAppearance: false,
+  volume: .20,
+  appearance: "default",
   blumenthalPuzzles: false
 };
 
 export const TRILON_SOUND_SOURCE = '/assets/sounds/trilon.mp3';
+export const NBC_TRILON_SOUND_SOURCE = '/assets/sounds/nbc-trilon.mp3';
 export const REBUS_PATH = '/assets/puzzles/';
 export const COMPARISON_INTERVAL = 1200;
 export const MESSAGE_DELAY = 3000;

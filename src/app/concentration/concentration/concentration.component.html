@@ -19,7 +19,8 @@
                        [puzzleUrl]="currentPuzzle.url" (click)="handleTrilonClick(trilon)"
                        [resizeMarker]=resizeMarker
                        [ngClass]="{
-                          narz: gameOptions?.narzAppearance,
+                          narz: gameOptions.appearance === 'narz',
+                          nbc: gameOptions.appearance === 'nbc',
                           inhibit: inhibitTransitions,
                           blumenthal: gameOptions?.blumenthalPuzzles,
                           exposeReady: exposeReady
@@ -51,8 +52,12 @@
       </div><!-- end, game board area -->
 
       <div id="contestants">
-        <ca-scoreboard [players]="players" [singleMode]="singleMode" [activeIndex]="activeIndex"
-                       [otherIndex]="otherIndex" (sentMessage)="setMessage($event)"></ca-scoreboard>
+        <ca-scoreboard [players]="players"
+                       [singleMode]="singleMode"
+                       [activeIndex]="activeIndex"
+                       [otherIndex]="otherIndex"
+                       [appearance]="gameOptions.appearance"
+                       (sentMessage)="setMessage($event)"></ca-scoreboard>
         <div id="playagain-div" class="inner" @insertRemoveTrigger *ngIf="showPlayAgain">
           <button type="button" (click)="playAgain()">Play Again</button>
         </div>
