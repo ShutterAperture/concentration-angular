@@ -621,7 +621,6 @@ describe('ConcentrationComponent', () => {
   describe('acceptGameOptions', () => {
     it('should accept the game options emitted by the game option component', () => {
 
-
       component.trilonSounds = {
         regular: {
           src: TRILON_SOUND_SOURCE,
@@ -632,7 +631,6 @@ describe('ConcentrationComponent', () => {
           volume: .30
         } as HTMLAudioElement
       }
-
 
       component.gameOptions = DEFAULT_GAME_OPTIONS;
 

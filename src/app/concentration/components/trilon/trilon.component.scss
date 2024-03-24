@@ -14,7 +14,6 @@ $narz-letter: rgb(166,83,21);
 $nbc-dark-gray: rgb(54, 35,36);
 $nbc-background: rgb(214,184,41);
 
-
 $transform-transition: .7s;
 
 :host {
@@ -79,7 +78,6 @@ $transform-transition: .7s;
     --nbc-letter-spacing: unset
   }
 }
-
 
 @mixin trilonStates($centerPoint) {
   transform: translateZ(-$centerPoint);
@@ -175,7 +173,7 @@ $transform-transition: .7s;
           font-family: 'Bebas Neue', sans-serif;
 
           &.wildcard {
-            background-image: url("/assets/images/wildcard.gif");
+            background-image: url("/assets/images/wildcard2.gif");
             background-repeat: no-repeat;
             background-size: 95%;
             background-position: center;
@@ -263,7 +261,6 @@ $transform-transition: .7s;
     font-family: 'Open Sans', sans-serif;
     font-weight: 700;
     font-size: var(--default-font-size);
-    // font: 400 1.6em 'Bebas Neue', sans-serif;
     line-height: var(--num-line-height);
     background: #A3211B;
     color: #FFF;
