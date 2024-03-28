@@ -127,6 +127,10 @@ $transform-transition: .7s;
   transform-style: preserve-3d;
   backface-visibility: hidden;
 
+  &.unclickable {
+    cursor: default;
+  }
+
   &.narz {
     .trilon .num {
       background: $narz-red;

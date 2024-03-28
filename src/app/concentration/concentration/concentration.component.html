@@ -21,6 +21,7 @@
                        [ngClass]="{
                           narz: gameOptions.appearance === 'narz',
                           nbc: gameOptions.appearance === 'nbc',
+                          unclickable: !clickAllowed,
                           inhibit: inhibitTransitions,
                           blumenthal: gameOptions?.blumenthalPuzzles,
                           exposeReady: exposeReady
