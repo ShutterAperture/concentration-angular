@@ -133,15 +133,11 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
     const sound = this.trilonSounds[soundKey];
 
     if (this.gameOptions.enableSound) {
-      if (this.firstSoundPlay[soundKey] || sound.ended) {
-        sound.play();
-        this.firstSoundPlay[soundKey] = false;
-      }
-      else {
-        fromEvent(sound, 'ended')
-          .pipe(take(1))
-          .subscribe(() => void sound.play());
-      }
+      this.clickAllowed = false;
+      fromEvent(sound, 'ended')
+        .pipe(take(1))
+        .subscribe(() => this.clickAllowed = true)
+      void sound.play();
     }
   }
 
@@ -426,7 +422,7 @@ export class ConcentrationComponent implements OnInit, OnDestroy {
     this.gameOptions = gameOptions;
 
     this.trilonSounds.regular.volume = this.gameOptions.volume;
-    this.trilonSounds.nbc.volume = this.gameOptions.volume * 1.5;
+    this.trilonSounds.nbc.volume = this.gameOptions.volume;
   }
 
   ngOnDestroy(): void {
