@@ -192,7 +192,7 @@ $transform-transition: .7s;
 
   &.blumenthal {
     .pzl {
-      filter:  grayscale(1) invert(1) contrast(1.4);
+      filter:  grayscale(1) sepia(0) hue-rotate(0) saturate(0) contrast(1) invert(1) ;
     }
   }
 
@@ -297,7 +297,7 @@ $transform-transition: .7s;
 .pzl {
   background: #FFF;
   color: #000;
-  filter: grayscale(0) invert(0);
+  filter: grayscale(0) sepia(0) hue-rotate(0) saturate(1) contrast(1) invert(0);
   background-size: 492px 390px;
   transition: transform $narz-transition, filter $narz-transition;
 }
